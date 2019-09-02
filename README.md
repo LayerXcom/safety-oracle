@@ -18,16 +18,20 @@ The goal of this repository is written here: https://github.com/LayerXcom/safety
 
 #### Algorithm
 
-    candidate estimate に estimate しているバリデータ集合をVとする
-    Vを頂点集合とするグラフGとし、Vの任意の相違なるバリデータv_1,v_2において、以下の条件を全て満たす場合に、v_1,v_2間に辺を張る
-        v1のlatest_messageのjustificationにv2が含まれている
-        v2のlatest_messageのjustificationにv1が含まれている
-        v1のlatest_messageがjustifyしたv2のmessageがcandidate_estimateとconflictしていない
-        v2のlatest_messageがjustifyしたv1のmessageがcandidate_estimateとconflictしていない
-        v1がまだ見れていないがviewに存在するv2のメッセージのうち、candidate_estimateとconflictするメッセージが存在しない
-        v2がまだ見れていないがviewに存在するv1のメッセージのうち、candidate_estimateとconflictするメッセージが存在しない
-    Gの maximum weighted clique Cを求める
-    fault_tolerance = 2 * C_weight - W(V)
+Let V be a set of validtor that estimate `CANDIDATE_ESTIMATE` and G be an undirected graph with vertex set V.
+
+Every pair (v1, v2) that satisfied the following conditions is connected by a edge. 
+- v1 ≠ v2
+- The justification of the v1 latest_message includes v2.
+- The justification of the v2 latest_message includes v1.
+- A v2 message in the v1 latest_message doesn't conflict with `CANDIDATE_ESTIMATE`
+- A v1 message in the v2 latest_message doesn't conflict with `CANDIDATE_ESTIMATE`
+- There is no message that conflicts with `CANDIDATE_ESTIMATE` among v2 messages that have not been seen yet by v1 but are in the view.
+- There is no message that conflicts with `CANDIDATE_ESTIMATE` among v1 messages that have not been seen yet by v2 but are in the view.
+
+Find the maximum weighted clique C of G.
+
+fault_tolerance = 2 * C_weight - V_weight
 
 See: https://en.wikipedia.org/wiki/Clique_problem#Finding_maximum_cliques_in_arbitrary_graphs
 
@@ -62,7 +66,7 @@ r is a lower bound on the size of clique in graphs with n vertices and |E| edges
 
 Getting the number of edges is `O(1)`.
 
-Getting the minimum size of maximum clique is `O(1)`.
+Getting the minimum size of the maximum clique is `O(1)`.
 
 Getting sorted validators is `O(1)`.
 
