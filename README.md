@@ -18,20 +18,20 @@ The goal of this repository is written here: https://github.com/LayerXcom/safety
 
 #### Algorithm
 
-Let V be a set of validtor that estimate `CANDIDATE_ESTIMATE` and G be an undirected graph with vertex set V.
+1. Let V be a set of validtor that estimate `CANDIDATE_ESTIMATE` and G be an undirected graph with vertex set V.
 
-Every pair (v1, v2) that satisfied the following conditions is connected by a edge. 
-- v1 ≠ v2
-- The justification of the v1 latest_message includes v2.
-- The justification of the v2 latest_message includes v1.
-- A v2 message in the v1 latest_message doesn't conflict with `CANDIDATE_ESTIMATE`
-- A v1 message in the v2 latest_message doesn't conflict with `CANDIDATE_ESTIMATE`
-- There is no message that conflicts with `CANDIDATE_ESTIMATE` among v2 messages that have not been seen yet by v1 but are in the view.
-- There is no message that conflicts with `CANDIDATE_ESTIMATE` among v1 messages that have not been seen yet by v2 but are in the view.
+2. Every pair (v1, v2) that satisfied the following conditions is connected by a edge. `O(V^2log V + VM) = O(V(VlogV + M))`
+    - v1 ≠ v2
+    - The justification of the v1 latest_message includes v2. `O(log V)`.
+    - The justification of the v2 latest_message includes v1.
+    - A v2 message in the v1 latest_message doesn't conflict with `CANDIDATE_ESTIMATE`
+    - A v1 message in the v2 latest_message doesn't conflict with `CANDIDATE_ESTIMATE`
+    - There is no message that conflicts with `CANDIDATE_ESTIMATE` among v2 messages that have not been seen yet by v1 but are in the view. `O(M)` for v1.
+    - There is no message that conflicts with `CANDIDATE_ESTIMATE` among v1 messages that have not been seen yet by v2 but are in the view.
 
-Find the maximum weighted clique C of G.
+3. Find the maximum weighted clique C of G (exponential time).
 
-fault_tolerance = 2 * C_weight - V_weight
+4. fault_tolerance = 2 * C_weight - V_weight
 
 See: https://en.wikipedia.org/wiki/Clique_problem#Finding_maximum_cliques_in_arbitrary_graphs
 
@@ -64,17 +64,21 @@ r is a lower bound on the size of clique in graphs with n vertices and |E| edges
 
 #### Algorithm
 
-Getting the number of edges is `O(1)`.
+1. Same as the method of clique oracle
 
-Getting the minimum size of the maximum clique is `O(1)`.
+2. Same as the method of clique oracle
 
-Getting sorted validators is `O(1)`.
+3. Calculate the minimum size of the maximum weighted clique using above formula by `O(1)`.
+
+4. Calculate the maximum weigted clique C.
+
+5. fault_threshold = 2 * C_weight - V_weight
 
 #### Metrics
 
 || Detect | Update |
 -|-|-
-| Time complexity | `O(1)` | |
+| Time complexity | `O(V^2log V + VM)`| |
 | Space complexity | `O(V^2+E)` | |
 | Time to detection | | |
 | Threshold | | |
