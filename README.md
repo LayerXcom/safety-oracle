@@ -3,16 +3,16 @@ Summaries and analysis of safety oracles.
 
 The goal of this repository is written here: https://github.com/LayerXcom/safety-oracle/issues/1
 
+
+## Definitions in big O notation
+
+`V`: The number of validators
+
+`M`: The number of messages(vertices) in MessageDAG.
+
+`E`: The number of edges in MessageDAG. `E <= MV`.
+
 ## Summaries
-
-
-### Definitions
-
-`V`: Number of validators.
-
-`M`: Number of messages(vertices) in MessageDAG.
-
-`E`: Number of edges in MessageDAG. `E <= MV`.
 
 ### Clique Oracle
 
@@ -40,7 +40,7 @@ See: https://en.wikipedia.org/wiki/Clique_problem#Finding_maximum_cliques_in_arb
 
 || Detect | Update |
 -|-|-
-| Time complexity | exponential (`O*(2^n)`, `O*(1.2599^n)`, etc) | |
+| Time complexity | exponential (`O*(2^V)`, `O*(1.2599^V)`, etc) | |
 | Space complexity | `O(V^2+E)` | |
 | Time to detection | | |
 | Threshold | | |
