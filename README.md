@@ -77,7 +77,7 @@ r is a lower bound on the size of clique in graphs with n vertices and |E| edges
 
 4. Calculate the maximum weigted clique C.
 
-5. fault_threshold = 2 * C_weight - V_weight
+5. fault_tolerance = 2 * C_weight - V_weight
 
 #### Metrics
 
@@ -133,9 +133,9 @@ This oracle is the simplified simulation algorithm.
                 justification = view.latest_messages[v1].justification
                 if v2 not in justification:
                     viewables[v1][v2] = ADV_ESTIMATE
-                elif (there is a v2 message that estimate ADV_ESTIMATE and have seen from v1)
+                elif (there is a v2 message that estimate ADV_ESTIMATE and have seen from v1):
                     viewables[v1][v2] = ADV_ESTIMATE
-                else
+                else:
                     viewables[v1][v2] = (message estimate that the hash is justification[v2])
 
 4. Assume that all validator estimates that may change from `CAN_ESTIMATE` to `ADV_ESTIMATE` are `ADV_ESTIMATE`.
@@ -161,13 +161,14 @@ This oracle is the simplified simulation algorithm.
 
 5. If (total weight of `CAN_ESTIMATE`) > (total weight of `ADV_ESTIMATE`) is finally statisfied, the property is finalized.
 
+6. fault_tolerance = the minimum validator weight.
+
 #### Metrics
 
 || Detect | Update |
 -|-|-
 | Time complexity | `O(V^3)` | |
 | Space complexity | `O(V^2+J)`| |
-
 
 
 ### Adversary Oracle with Priority Queue
