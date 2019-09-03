@@ -10,7 +10,9 @@ The goal of this repository is written here: https://github.com/LayerXcom/safety
 
 `M`: The number of messages(vertices) in MessageDAG.
 
-`E`: The number of edges in MessageDAG. `E <= MV`.
+`J`: The number of justifications(edges) in MessageDAG.
+
+For simplicity, we assumed that `V <= M <= J <= MV`.
 
 ## Summaries
 
@@ -20,7 +22,7 @@ The goal of this repository is written here: https://github.com/LayerXcom/safety
 
 1. Let V be a set of validtor that estimate `CANDIDATE_ESTIMATE` and G be an undirected graph with vertex set V.
 
-2. Every pair (v1, v2) that satisfied the following conditions is connected by a edge. `O(V^2log V + VM) = O(V(VlogV + M))`
+2. Every pair (v1, v2) that satisfied the following conditions is connected by a edge. `O(V^2logV + VM) = O(V(VlogV + M))`
     - v1 ≠ v2
     - The justification of the v1 latest_message includes v2. `O(log V)`.
     - The justification of the v2 latest_message includes v1.
@@ -41,7 +43,7 @@ See: https://en.wikipedia.org/wiki/Clique_problem#Finding_maximum_cliques_in_arb
 || Detect | Update |
 -|-|-
 | Time complexity | exponential (`O*(2^V)`, `O*(1.2599^V)`, etc) | |
-| Space complexity | `O(V^2+E)` | |
+| Space complexity | `O(V^2+J)` | |
 | Time to detection | | |
 | Threshold | | |
 
@@ -78,52 +80,63 @@ r is a lower bound on the size of clique in graphs with n vertices and |E| edges
 
 || Detect | Update |
 -|-|-
-| Time complexity | `O(V^2log V + VM)`| |
-| Space complexity | `O(V^2+E)` | |
+| Time complexity | `O(V^2logV + VM)`| |
+| Space complexity | `O(V^2+J)` | |
 | Time to detection | | |
 | Threshold | | |
 
-### Adversary Oracle
+### The Inspector
 
 #### Algorithm
-Ref: https://github.com/ethereum/cbc-casper/blob/master/casper/safety_oracles/adversary_oracle.py
+
+See: https://hackingresear.ch/cbc-inspector/
+
+Recalculating levels happens worst `V` times and the time complexity of the recalculation is `O(J)`.
+
+#### Metrics
+
+|| Detect | Update |
+-|-|-
+| Time complexity | `O(VJ)` | |
+| Space complexity | `O(J)` | |
+| Time to detection | | |
+| Threshold | | |
+
+
+### Adversary Oracle (necessary and sufficient conditions)
 
 Simulate based on current MessageDAG.
 If the result does not change no matter what happens in the future state, the property is finalized.
+But, it is inefficient to simulate every possible future.
+
+### Adversary Oracle (original, in ethereum/cbc-casper)
+Ref: https://github.com/ethereum/cbc-casper/blob/master/casper/safety_oracles/adversary_oracle.py
+
+This oracle is the simplified simulation algorithm.
+
+#### Algorithm
 
 #### Metrics
 
 || Detect | Update |
 -|-|-
 | Time complexity | `O(V^3)` | |
-| Space complexity | | |
+| Space complexity | `O(V+J) = O(J)`| |
 | Time to detection | | |
 | Threshold | | |
 
-### The Inspector
 
-#### Metrics
 
-|| Detect | Update |
--|-|-
-| Time complexity | | |
-| Space complexity | | |
-| Time to detection | | |
-| Threshold | | |
-
+### Adversary Oracle with Priority Queue
 
 #### Algorithm
 
-See: https://hackingresear.ch/cbc-inspector/
-
-### Ideal Oracle (Necessary and sufficient oracle)
-
 #### Metrics
 
 || Detect | Update |
 -|-|-
-| Time complexity | | |
-| Space complexity | | |
+| Time complexity | `O(V^2)` | |
+| Space complexity | `O(V+J) = O(J)` | |
 | Time to detection | | |
 | Threshold | | |
 
@@ -131,17 +144,17 @@ See: https://hackingresear.ch/cbc-inspector/
 ## Comparison
 
 
-### Complexity
-||Clique Oracle | Turán Oracle | The Inspector | Ideal Oracle |
--|-|-|-|-
-|Time Complexity |exponential|||
-|Space Complexity ||||
+### Detect finality
+||Clique Oracle | Turán Oracle |  The Inspector | Adversary Oracle (original) | Adversary Oracle with Priority Queue |
+-|-|-|-|-|-|-
+|Time Complexity |exponential|`O(V^2logV + VM)`| `O(VJ)` | `O(V^3)`| `O(V^2)` |
+|Space Complexity |`O(V^2+J)`|`O(V^2+J)`| `O(J)` |`O(J)`|`O(J)`|
 
 
 ### Threshold
 
-||Clique Oracle | Turán Oracle | The Inspector | Ideal Oracle |
--|-|-|-|-
+||Clique Oracle | Turán Oracle | The Inspector |  Adversary Oracle (original) | Adversary Oracle with Priority Queue |
+-|-|-|-|-|-
 |1 ||||
 |2 ||||
 |3 ||||
