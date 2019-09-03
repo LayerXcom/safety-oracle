@@ -146,7 +146,7 @@ This oracle is the simplified simulation algorithm.
 
 ### Detect finality
 ||Clique Oracle | Turán Oracle |  The Inspector | Adversary Oracle (original) | Adversary Oracle with Priority Queue |
--|-|-|-|-|-|-
+-|-|-|-|-|-
 |Time Complexity |exponential|`O(V^2logV + VM)`| `O(VJ)` | `O(V^3)`| `O(V^2)` |
 |Space Complexity |`O(V^2+J)`|`O(V^2+J)`| `O(J)` |`O(J)`|`O(J)`|
 
