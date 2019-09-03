@@ -3,10 +3,9 @@ Summaries and analysis of safety oracles.
 
 The goal of this repository is written here: https://github.com/LayerXcom/safety-oracle/issues/1
 
+## Definitions
 
-## Definitions in big O notation
-
-`V`: The number of validators
+`V`: The number of validators.
 
 `M`: The number of messages(vertices) in MessageDAG.
 
@@ -14,22 +13,26 @@ The goal of this repository is written here: https://github.com/LayerXcom/safety
 
 For simplicity, we assumed that `V <= M <= J <= MV`.
 
+`CAN_ESTIMATE`: The candidate estimate.
+
+`ADV_ESTIMATE`: The estimate that the adversary wants to finalize.
+
 ## Summaries
 
 ### Clique Oracle
 
 #### Algorithm
 
-1. Let V be a set of validtor that estimate `CANDIDATE_ESTIMATE` and G be an undirected graph with vertex set V.
+1. Let V be a set of validtor that estimate `CAN_ESTIMATE` and G be an undirected graph with vertex set V.
 
 2. Every pair (v1, v2) that satisfied the following conditions is connected by a edge. `O(V^2logV + VM) = O(V(VlogV + M))`
     - v1 ≠ v2
     - The justification of the v1 latest_message includes v2. `O(log V)`.
     - The justification of the v2 latest_message includes v1.
-    - A v2 message in the v1 latest_message doesn't conflict with `CANDIDATE_ESTIMATE`
-    - A v1 message in the v2 latest_message doesn't conflict with `CANDIDATE_ESTIMATE`
-    - There is no message that conflicts with `CANDIDATE_ESTIMATE` among v2 messages that have not been seen yet by v1 but are in the view. `O(M)` for v1.
-    - There is no message that conflicts with `CANDIDATE_ESTIMATE` among v1 messages that have not been seen yet by v2 but are in the view.
+    - A v2 message in the v1 latest_message doesn't conflict with `CAN_ESTIMATE`
+    - A v1 message in the v2 latest_message doesn't conflict with `CAN_ESTIMATE`
+    - There is no message that conflicts with `CAN_ESTIMATE` among v2 messages that have not been seen yet by v1 but are in the view. `O(M)` for v1.
+    - There is no message that conflicts with `CAN_ESTIMATE` among v1 messages that have not been seen yet by v2 but are in the view.
 
 3. Find the maximum weighted clique C of G (exponential time).
 
@@ -82,8 +85,6 @@ r is a lower bound on the size of clique in graphs with n vertices and |E| edges
 -|-|-
 | Time complexity | `O(V^2logV + VM)`| |
 | Space complexity | `O(V^2+J)` | |
-| Time to detection | | |
-| Threshold | | |
 
 ### The Inspector
 
@@ -99,31 +100,73 @@ Recalculating levels happens worst `V` times and the time complexity of the reca
 -|-|-
 | Time complexity | `O(VJ)` | |
 | Space complexity | `O(J)` | |
-| Time to detection | | |
-| Threshold | | |
 
 
 ### Adversary Oracle (necessary and sufficient conditions)
 
 Simulate based on current MessageDAG.
-If the result does not change no matter what happens in the future state, the property is finalized.
+If the result does not change no matter what happens in all future state, the property is finalized.
 But, it is inefficient to simulate every possible future.
 
-### Adversary Oracle (original, in ethereum/cbc-casper)
+### Adversary Oracle (straightforward, in ethereum/cbc-casper)
 Ref: https://github.com/ethereum/cbc-casper/blob/master/casper/safety_oracles/adversary_oracle.py
 
 This oracle is the simplified simulation algorithm.
 
 #### Algorithm
 
+1. From `view`, we can see that there are validators from which the estimate of the latest messages is `CAN_ESTIMATE` or `ADV_ESTIMATE` or unknown.
+
+2. If the estimate is unknown, we assume that it is `ADV_ESTIMATE`.
+
+
+        C = set()
+        for v in V:
+            if v in view.latest_messages and view.latest_messages[v].estimate == CAN_ESTIMATE:
+                C.add(v)
+
+
+3. Build `viewables` with the following pseudo code.
+
+        for v1 in V:
+            for v2 in V:
+                justification = view.latest_messages[v1].justification
+                if v2 not in justification:
+                    viewables[v1][v2] = ADV_ESTIMATE
+                elif (there is a v2 message that estimate ADV_ESTIMATE and have seen from v1)
+                    viewables[v1][v2] = ADV_ESTIMATE
+                else
+                    viewables[v1][v2] = (message estimate that the hash is justification[v2])
+
+4. Assume that all validator estimates that may change from `CAN_ESTIMATE` to `ADV_ESTIMATE` are `ADV_ESTIMATE`.
+
+        progress_mode = True
+        while progress_mode:
+            progress_mode = False
+
+            to_remove = set()
+            for v in C:
+                can_weight = sum(v2.weight for v2 in viewables[v] if viewables[v2] == CAN_ESTIMATE and v2 in C))
+                adv_weight = sum(v2.weight for v2 in viewables[v] if viewables[v2] == ADV_ESTIMATE or v2 not in C))
+
+                if can_weight <= adv_weight:
+                    to_remove.add(v)
+                    progress_mode = True
+                
+            C.difference_update(to_remove)
+        
+        if (total weight of CAN_ESTIMATE) > (total weight of ADV_ESTIMATE):
+            the property is finalized
+
+
+5. If (total weight of `CAN_ESTIMATE`) > (total weight of `ADV_ESTIMATE`) is finally statisfied, the property is finalized.
+
 #### Metrics
 
 || Detect | Update |
 -|-|-
 | Time complexity | `O(V^3)` | |
-| Space complexity | `O(V+J) = O(J)`| |
-| Time to detection | | |
-| Threshold | | |
+| Space complexity | `O(V^2+J)`| |
 
 
 
@@ -137,23 +180,28 @@ This oracle is the simplified simulation algorithm.
 -|-|-
 | Time complexity | `O(V^2)` | |
 | Space complexity | `O(V+J) = O(J)` | |
-| Time to detection | | |
-| Threshold | | |
 
 
 ## Comparison
 
 
 ### Detect finality
-||Clique Oracle | Turán Oracle |  The Inspector | Adversary Oracle (original) | Adversary Oracle with Priority Queue |
+||Clique Oracle | Turán Oracle |  The Inspector | Adversary Oracle (straightforward) | Adversary Oracle with Priority Queue |
 -|-|-|-|-|-
 |Time Complexity |exponential|`O(V^2logV + VM)`| `O(VJ)` | `O(V^3)`| `O(V^2)` |
-|Space Complexity |`O(V^2+J)`|`O(V^2+J)`| `O(J)` |`O(J)`|`O(J)`|
+|Space Complexity |`O(V^2+J)`|`O(V^2+J)`| `O(J)` |`O(V^2+J)`|`O(J)`|
 
+
+### Time to detection
+||Clique Oracle | Turán Oracle | The Inspector |  Adversary Oracle (straightforward) | Adversary Oracle with Priority Queue |
+-|-|-|-|-|-
+|1 ||||
+|2 ||||
+|3 ||||
 
 ### Threshold
 
-||Clique Oracle | Turán Oracle | The Inspector |  Adversary Oracle (original) | Adversary Oracle with Priority Queue |
+||Clique Oracle | Turán Oracle | The Inspector |  Adversary Oracle (straightforward) | Adversary Oracle with Priority Queue |
 -|-|-|-|-|-
 |1 ||||
 |2 ||||
