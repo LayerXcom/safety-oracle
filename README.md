@@ -1,5 +1,5 @@
 # Safety Oracle
-Summaries and analysis of safety oracles.
+Safety oracles summaries, analysis and comparison.
 
 The goal of this repository is written here: https://github.com/LayerXcom/safety-oracle/issues/1
 
@@ -16,6 +16,10 @@ For simplicity, we assumed that `V <= M <= J <= MV`.
 `CAN_ESTIMATE`: The candidate estimate.
 
 `ADV_ESTIMATE`: The estimate that the adversary wants to finalize.
+
+### Threshold
+
+
 
 ## Summaries
 
@@ -47,8 +51,6 @@ See: https://en.wikipedia.org/wiki/Clique_problem#Finding_maximum_cliques_in_arb
 -|-|-
 | Time complexity | exponential (`O*(2^V)`, `O*(1.2599^V)`, etc) | |
 | Space complexity | `O(V^2+J)` | |
-| Time to detection | | |
-| Threshold | | |
 
 ### Turán Oracle
 
@@ -167,20 +169,26 @@ This oracle is the simplified simulation algorithm.
 
 || Detect | Update |
 -|-|-
-| Time complexity | `O(V^3)` | |
+| Time complexity | `O(V^3+J)` | |
 | Space complexity | `O(V^2+J)`| |
 
 
 ### Adversary Oracle with Priority Queue
 
+ethereum/cbc-capser の Adversary Oracle では fault tolerance が the minimum validator weight としているが、fault tolerance は min { can_weight - adv_weight } である。なぜなら can_weight - adv_weight が最も小さいバリデータが意見を変えなければ、Cは変わらず、(total weight of `CAN_ESTIMATE`) > (total weight of `ADV_ESTIMATE`) は依然成り立つためである。
+
+また、意見を最も変えやすいノードを優先して調べればいいため、priority queue を使って調べるバリデータを管理すれば、より高速に最終的なCを調べることができる。
+
+
 #### Algorithm
+
 
 #### Metrics
 
 || Detect | Update |
 -|-|-
-| Time complexity | `O(V^2)` | |
-| Space complexity | `O(V+J) = O(J)` | |
+| Time complexity | `O(V^2+J)` | |
+| Space complexity | `O(V^2+J)` | |
 
 
 ## Comparison
@@ -189,8 +197,8 @@ This oracle is the simplified simulation algorithm.
 ### Detect finality
 ||Clique Oracle | Turán Oracle |  The Inspector | Adversary Oracle (straightforward) | Adversary Oracle with Priority Queue |
 -|-|-|-|-|-
-|Time Complexity |exponential|`O(V^2logV + VM)`| `O(VJ)` | `O(V^3)`| `O(V^2)` |
-|Space Complexity |`O(V^2+J)`|`O(V^2+J)`| `O(J)` |`O(V^2+J)`|`O(J)`|
+|Time Complexity |exponential|`O(V^2logV + VM)`| `O(VJ)` | `O(V^3+J)`| `O(V^2+J)` |
+|Space Complexity |`O(V^2+J)`|`O(V^2+J)`| `O(J)` |`O(V^2+J)`|`O(V^2+J)`|
 
 
 ### Time to detection
