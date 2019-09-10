@@ -1,8 +1,6 @@
 # Safety Oracle
 Safety oracles summaries, analysis and comparison.
 
-## 
-
 The goal of this repository is written here: https://github.com/LayerXcom/safety-oracle/issues/1
 
 ## Definitions
@@ -108,16 +106,29 @@ r is a lower bound on the size of clique in graphs with n vertices and |E| edges
 || Detect | Detect (with updating)|
 -|-|-
 | Time complexity | O(V^2 + VM)| O(1) |
-| Space complexity | O(V^2+J) | O(1) |
+| Space complexity | O(V^2) | O(1) |
 
 
 ### Simple Finality Detector
 
-Simple Finality Detector は、Clique Oracle の一般化
+Simple finality detector is a generalization of Clique oracle.
 
 #### Algorithm
 
+1. Construct the lobbying graph G or get it.
+2. Let q = n/2 + t/2.
+3. Compute outdegree of vertices in G.
+4. C = V.
+4. Look for the vertice with outdegree of q or less in C, remove it from C, and update the outdegree counters.
+5. Repeat 4.
+6. If W(C) > q, the property is finalized.
+
 #### Metrics
+
+|| Detect | Detect (with updating)|
+-|-|-
+| Time complexity | O(V^2 + VM)| O(V^2) |
+| Space complexity | O(V^2+J) |  |
 
 ### The Inspector (Improved Finality Detector)
 
@@ -125,7 +136,7 @@ Simple Finality Detector は、Clique Oracle の一般化
 
 See: https://hackingresear.ch/cbc-inspector/
 
-Recalculating levels happens worst V times and the time complexity of the recalculation is O(J).
+Recalculating levels happens worst V times and the recalculation runs in O(J) time, so the total time complexity is O(VJ).
 
 #### Metrics
 
@@ -260,7 +271,7 @@ ethereum/cbc-capser の Adversary Oracle では fault tolerance を the minimum 
             the property is finalized
 
 
-#### Detect all finality that clique oracle can do
+#### Detect all finality that Clique oracle can do
 
 
 
@@ -282,7 +293,7 @@ ethereum/cbc-capser の Adversary Oracle では fault tolerance を the minimum 
 ||Clique Oracle | Turán Oracle |  The Inspector | Adversary Oracle (straightforward) | Adversary Oracle with Priority Queue |
 -|-|-|-|-|-
 |Time |exponential| O(V^2 + VM) |  O(VJ)  |  O(V^3+VM) |  O(V^2+VM)  |
-|Space |  | O(V^2+J) |  O(J)  | O(V^2) |  O(V^2) |
+|Space |  | O(V^2) |  O(J)  | O(V^2) |  O(V^2) |
 
 #### Detect with updating when a message comes
 ||Clique Oracle | Turán Oracle |  The Inspector | Adversary Oracle (straightforward) | Adversary Oracle with Priority Queue |
@@ -290,7 +301,8 @@ ethereum/cbc-capser の Adversary Oracle では fault tolerance を the minimum 
 |Time |exponential| O(1) |    |  O(V^3) |  O(V^2)  |
 |Space| | O(1) |    |   |    |
 
-### Time to detection
+
+### Time to finality
 ||Clique Oracle | Turán Oracle | The Inspector |  Adversary Oracle (straightforward) | Adversary Oracle with Priority Queue |
 -|-|-|-|-|-
 |1 ||||
