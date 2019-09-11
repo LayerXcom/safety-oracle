@@ -27,7 +27,7 @@ The lobbying graph G(V,E) is constructed as follows.
 
 1. Let V be a set of validtor that estimates `CAN_ESTIMATE` and G be a directed graph with vertex set V.
 
-2. Every ordered pair (v1, v2) that satisfies the following conditions is connected by a arrow. 
+2. Every ordered pair (v1, v2) that satisfies the following conditions is connected by an arrow. 
     - v1 ≠ v2
     - The justification of the v1 latest_message includes v2.
     - The justification of the v2 latest_message includes v1.
@@ -65,7 +65,7 @@ CAN_ESTIMATEだったら、色々更新する必要があるが、これも結�
 
 2. Find the maximum weighted clique C of G in **exponential time**.
 
-3. fault_tolerance = 2 * W(C) - W(V)
+3. Byzantine fault tolerance threshold `t = 2 * W(C) - W(V)`. (`q = n/2 + t/2`)
 
 See: https://en.wikipedia.org/wiki/Clique_problem#Finding_maximum_cliques_in_arbitrary_graphs
 
@@ -77,6 +77,28 @@ See: https://en.wikipedia.org/wiki/Clique_problem#Finding_maximum_cliques_in_arb
 | Space complexity |  | |
 
 Finding a clique requires O*(2^V) time. Even the fastest algorithm requires O*(1.1888^V). ( O*(f(k)) = O(f(k) poly(x)) )
+
+#### Why q = n/2 + t/2?
+
+If a validator in C equivocate, the other validators in C can detect the equivocation and aren't affected by it.
+
+For example, MessageDAG is as the follow image.
+
+![](https://i.gyazo.com/5c074df481c8bdee2cf0672632c10c44.png)
+
+`t = 2*q - n = 2*6 - 7 = 5`
+
+This means that up to 5-1=4 equivocation failures can be tolerated.
+
+Then, Suppose 4 validators (C,D,E,F) equivocate. 
+
+![](https://i.gyazo.com/6cba9f81c57c3294bd0f79cb7ddaa02d.png)
+
+A and B can detect the equivocations and ignore them and `W({A,B}) = 2 > W({G}) = 1`.
+
+<!-- 
+クリーク内のバリデータが equivocation をしても、その equivocation にクリーク内のバリデータが影響を受けることはない。
+-->
 
 ### Turán Oracle
 
@@ -113,9 +135,9 @@ r is a lower bound on the size of clique in graphs with n vertices and |E| edges
 | Space complexity | O(V^2) | O(1) |
 
 
-### Simple Finality Detector
+### Simple Inspector
 
-Simple finality detector is a generalization of Clique oracle.
+Simple Inspector is a generalization of Clique oracle.
 
 #### Algorithm
 
@@ -293,13 +315,13 @@ ethereum/cbc-capser の Adversary Oracle では fault tolerance を the minimum 
 
 ### Complexity
 
-#### Detect
+#### Detect finality
 ||Clique Oracle | Turán Oracle |  The Inspector | Adversary Oracle (straightforward) | Adversary Oracle with Priority Queue |
 -|-|-|-|-|-
 |Time |exponential| O(V^2 + VM) |  O(VJ)  |  O(V^3 + VM) |  O(V^2 + VM)  |
 |Space |  | O(V^2) |  O(J)  | O(V^2) |  O(V^2) |
 
-#### Detect with updating when a message comes
+#### Detect finality with updating when a message comes
 ||Clique Oracle | Turán Oracle |  The Inspector | Adversary Oracle (straightforward) | Adversary Oracle with Priority Queue |
 -|-|-|-|-|-
 |Time |exponential| O(1) |    |  O(V^3) |  O(V^2)  |
