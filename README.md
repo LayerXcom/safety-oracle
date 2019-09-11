@@ -255,8 +255,6 @@ This oracle is the simplified simulation algorithm.
 
 We think that adversary oracle be faster using priority queue.
 
-#### Fault tolerance
-
 #### Using a priority queue
 
 <!-- 
@@ -265,8 +263,9 @@ ethereum/cbc-capser の Adversary Oracle では fault tolerance を the minimum 
 また、意見を最も変えやすいノードを優先して調べればいいため、priority queue を使って調べるバリデータを管理すれば、より高速に最終的なCを調べることができる。
 -->
 
-#### Detect all finality that Clique oracle can do
+#### Detect all finality that Clique oracle can do (WIP)
 
+// introducing the idea of observable equivocations
 
 #### Metrics
 
@@ -282,16 +281,15 @@ ethereum/cbc-capser の Adversary Oracle では fault tolerance を the minimum 
 ### Complexity
 
 #### Detect finality
-||Clique Oracle | Turán Oracle |  The Inspector | Adversary Oracle (straightforward) | Adversary Oracle with Priority Queue |
--|-|-|-|-|-
-|Time |exponential| O(V^2 + VM) |  O(VJ)  |  O(V^3 + VM) |  O(V^2 + VM)  |
-|Space | - | O(V^2) |  O(J)  | O(V^2) |  O(V^2) |
+||Clique Oracle | Turán Oracle | Simple Inspector | Inspector | Adversary Oracle | Adversary Oracle with Priority Queue |
+-|-|-|-|-|-|-
+|Time |exponential| O(V^2 + VM) | O(V^2 + VM) |  O(VJ)  |  O(V^3 + VM) |  O(V^2 + VM)  |
+|Space | - | O(V^2) |  O(V^2 + J) | O(J)  | O(V^2) |  O(V^2) |
 
 #### Detect finality when a new message comes
-||Clique Oracle | Turán Oracle |  The Inspector | Adversary Oracle (straightforward) | Adversary Oracle with Priority Queue |
--|-|-|-|-|-
-|Time |exponential| O(1) |  O(VJ)  |  O(V^3) |  O(V^2)  |
-
+||Clique Oracle | Turán Oracle | Simple Inspector | Inspector | Adversary Oracle | Adversary Oracle with Priority Queue |
+-|-|-|-|-|-|-
+|Time |exponential| O(1) | O(V^2) |  O(VJ)  |  O(V^3) |  O(V^2)  |
 
 ### Fault tolerance threshold and quorum
 ![](https://i.gyazo.com/02131195fbf9df360f36f36ae5e135a4.png)
@@ -303,9 +301,15 @@ The line `q = n - t` represents the maximum number of honest validators.
 Safety oracles that satisfies `q = n/2 + t` can achieve that fault tolerance threshold is `1/4`.
 On the other hand, safety oracles that satisfies `q = n/2 + t/2` can achieve that it is `1/3`.
 
+#### Examples
+![](https://i.gyazo.com/f10641dcf34ae64353666fb32b41a63f.png)
 
-||Clique Oracle | Turán Oracle | The Inspector |  Adversary Oracle (straightforward) | Adversary Oracle with Priority Queue |
+||Clique Oracle | Turán Oracle | Simple Inspector | Inspector |  Adversary Oracle |
 -|-|-|-|-|-
-|1 ||||
-|2 ||||
-|3 ||||
+t|4|4|2|2|
+
+![](https://i.gyazo.com/9d69aa78d3ea09a9b2b8dc4bd051388c.png)
+
+||Clique Oracle | Turán Oracle | Simple Inspector | Inspector |  Adversary Oracle |
+-|-|-|-|-|-
+t|4|4|2|3|
