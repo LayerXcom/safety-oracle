@@ -9,7 +9,7 @@ The goal of this repository is written here: https://github.com/LayerXcom/safety
 
 `ADV_ESTIMATE`: The estimate that the adversary wants to finalize.
 
-t: Byzantine fault tolerance threshold.
+t: Byzantine (or equivocation) fault tolerance threshold.
 
 ### In big-O notation
 
@@ -42,7 +42,7 @@ The lobbying graph G(V,E) is constructed as follows.
 ||Construct|Update when a new message comes|
 -|-|-
 |Time | O(V^2+VM) | O(V) |
-|Space | O(V^2) | O(1) |
+|Space | O(V^2) | - |
 
 The above algorithm uses O(V^2) space because E is O(V^2) for any graph.
 
@@ -74,7 +74,7 @@ See: https://en.wikipedia.org/wiki/Clique_problem#Finding_maximum_cliques_in_arb
 || Detect | Detect when a new message comes|
 -|-|-
 | Time complexity | exponential| exponential |
-| Space complexity |  | |
+| Space complexity | -  | - |
 
 Finding a clique requires O*(2^V) time. Even the fastest algorithm requires O*(1.1888^V). ( O*(f(k)) = O(f(k) poly(x)) )
 
@@ -136,7 +136,7 @@ r is a lower bound on the size of clique in graphs with n vertices and |E| edges
 || Detect | Detect when a new message comes|
 -|-|-
 | Time complexity | O(V^2 + VM)| O(1) |
-| Space complexity | O(V^2) | O(1) |
+| Space complexity | O(V^2) | - |
 
 
 ### Simple Inspector
@@ -158,9 +158,9 @@ Simple Inspector is a generalization of Clique oracle.
 || Detect | Detect when a new message comes|
 -|-|-
 | Time complexity | O(V^2 + VM)| O(V^2) |
-| Space complexity | O(V^2 + J) |  |
+| Space complexity | O(V^2 + J) | - |
 
-### The Inspector (Improved Finality Detector)
+### Inspector
 
 #### Algorithm
 
@@ -172,8 +172,8 @@ Recalculating levels happens worst V times and the recalculation runs in O(J) ti
 
 || Detect | Detect when a new message comes |
 -|-|-
-| Time complexity | O(VJ) |  |
-| Space complexity | O(J) | |
+| Time complexity | O(VJ) | O(VJ) |
+| Space complexity | O(J) | - |
 
 
 ### Adversary Oracle (necessary and sufficient conditions for finality)
@@ -242,16 +242,18 @@ This oracle is the simplified simulation algorithm.
 
 7. `t = min{can_weight - adv_weight}`.
 
-**N.B the original ethreum/casper's fault tolerance threshold t is the minimum validator weight in C.**
+**N.B. The original ethreum/casper's fault tolerance threshold t is the minimum validator weight in C, but we think that it is min{can_weight - adv_weight}**
 
 #### Metrics
 
 || Detect | Detect when a new message comes |
 -|-|-
 | Time complexity | O(V^3 + VM) | O(V^3) |
-| Space complexity | O(V^2) | |
+| Space complexity | O(V^2) | - |
 
 ### Adversary Oracle with Priority Queue (WIP)
+
+We think that adversary oracle be faster using priority queue.
 
 #### Fault tolerance
 
@@ -263,15 +265,7 @@ ethereum/cbc-capser の Adversary Oracle では fault tolerance を the minimum 
 また、意見を最も変えやすいノードを優先して調べればいいため、priority queue を使って調べるバリデータを管理すれば、より高速に最終的なCを調べることができる。
 -->
 
-#### 
-
-
-#### Algorithm (without priority queue)
-
-
 #### Detect all finality that Clique oracle can do
-
-
 
 
 #### Metrics
@@ -279,7 +273,7 @@ ethereum/cbc-capser の Adversary Oracle では fault tolerance を the minimum 
 || Detect | Detect when a new message comes |
 -|-|-
 | Time complexity | O(V^2 + VM) | O(V^2) |
-| Space complexity | O(V^2) | |
+| Space complexity | O(V^2) | - |
 
 
 ## Comparison
@@ -291,19 +285,18 @@ ethereum/cbc-capser の Adversary Oracle では fault tolerance を the minimum 
 ||Clique Oracle | Turán Oracle |  The Inspector | Adversary Oracle (straightforward) | Adversary Oracle with Priority Queue |
 -|-|-|-|-|-
 |Time |exponential| O(V^2 + VM) |  O(VJ)  |  O(V^3 + VM) |  O(V^2 + VM)  |
-|Space |  | O(V^2) |  O(J)  | O(V^2) |  O(V^2) |
+|Space | - | O(V^2) |  O(J)  | O(V^2) |  O(V^2) |
 
 #### Detect finality when a new message comes
 ||Clique Oracle | Turán Oracle |  The Inspector | Adversary Oracle (straightforward) | Adversary Oracle with Priority Queue |
 -|-|-|-|-|-
-|Time |exponential| O(1) |    |  O(V^3) |  O(V^2)  |
-|Space| | O(1) |    |   |    |
+|Time |exponential| O(1) |  O(VJ)  |  O(V^3) |  O(V^2)  |
 
 
 ### Fault tolerance threshold and quorum
 ![](https://i.gyazo.com/02131195fbf9df360f36f36ae5e135a4.png)
 
-This image is the relationship Byzantine (or equivocation) fault tolerance threshold and a quorum.
+This image is the relationship between Byzantine (or equivocation) fault tolerance threshold and a quorum.
 
 The line `q = n - t` represents the maximum number of honest validators.
 
