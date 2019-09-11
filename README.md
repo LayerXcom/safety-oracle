@@ -5,17 +5,21 @@ The goal of this repository is written here: https://github.com/LayerXcom/safety
 
 ## Definitions
 
-`V`: The number of validators.
-
-`M`: The number of messages(vertices) in MessageDAG.
-
-`J`: The number of arrows in MessageDAG.
-
-For simplicity, we assumed that `V <= M <= J <= MV`.
-
 `CAN_ESTIMATE`: The candidate estimate.
 
 `ADV_ESTIMATE`: The estimate that the adversary wants to finalize.
+
+t: Byzantine fault tolerance threshold.
+
+### In big-O notation
+
+V: The number of validators.
+
+M: The number of messages(vertices) in MessageDAG.
+
+J: The number of arrows in MessageDAG.
+
+For simplicity, we assumed that V <= M <= J <= MV.
 
 ### Lobbying Graph
 
@@ -42,7 +46,7 @@ The lobbying graph G(V,E) is constructed as follows.
 
 The above algorithm uses O(V^2) space because E is O(V^2) for any graph.
 
-In 2, checking if the justification of the message includes a validator requires O(1) time using a hash table on average case. For each validator, getting latest messages of the other validators and checking if the latest message conflicts with `CAN_ESTIMATE` requires O(M), so the total running time is O(VM).
+In 2, checking if the justification of the message includes a validator requires O(1) time on average case using a hash table. For each validator, getting latest messages of the other validators and checking if the latest message conflicts with `CAN_ESTIMATE` requires O(M), so the total running time is O(VM).
 
 However, if you update the lobbying graph every time you get a message, this process can be improved. Updating the graph when a message comes requires O(V) time, because for a message the number of arrows that are newly connected in MessageDAG is at most V.
 
@@ -128,7 +132,7 @@ Simple finality detector is a generalization of Clique oracle.
 || Detect | Detect (with updating)|
 -|-|-
 | Time complexity | O(V^2 + VM)| O(V^2) |
-| Space complexity | O(V^2+J) |  |
+| Space complexity | O(V^2 + J) |  |
 
 ### The Inspector (Improved Finality Detector)
 
@@ -212,7 +216,7 @@ This oracle is the simplified simulation algorithm.
 
 || Detect | Detect (with updating) |
 -|-|-
-| Time complexity | O(V^3+VM) | O(V^3) |
+| Time complexity | O(V^3 + VM) | O(V^3) |
 | Space complexity | O(V^2) | |
 
 ### Adversary Oracle with Priority Queue (WIP)
@@ -280,7 +284,7 @@ ethereum/cbc-capser の Adversary Oracle では fault tolerance を the minimum 
 
 || Detect | Detect (with updating) |
 -|-|-
-| Time complexity | O(V^2+VM) | O(V^2) |
+| Time complexity | O(V^2 + VM) | O(V^2) |
 | Space complexity | O(V^2) | |
 
 
@@ -292,7 +296,7 @@ ethereum/cbc-capser の Adversary Oracle では fault tolerance を the minimum 
 #### Detect
 ||Clique Oracle | Turán Oracle |  The Inspector | Adversary Oracle (straightforward) | Adversary Oracle with Priority Queue |
 -|-|-|-|-|-
-|Time |exponential| O(V^2 + VM) |  O(VJ)  |  O(V^3+VM) |  O(V^2+VM)  |
+|Time |exponential| O(V^2 + VM) |  O(VJ)  |  O(V^3 + VM) |  O(V^2 + VM)  |
 |Space |  | O(V^2) |  O(J)  | O(V^2) |  O(V^2) |
 
 #### Detect with updating when a message comes
@@ -302,15 +306,8 @@ ethereum/cbc-capser の Adversary Oracle では fault tolerance を the minimum 
 |Space| | O(1) |    |   |    |
 
 
-### Time to finality
-||Clique Oracle | Turán Oracle | The Inspector |  Adversary Oracle (straightforward) | Adversary Oracle with Priority Queue |
--|-|-|-|-|-
-|1 ||||
-|2 ||||
-|3 ||||
-
-
-### Fault Tolerance and Threshold
+### Fault tolerance threshold and quorum
+![](https://i.gyazo.com/02131195fbf9df360f36f36ae5e135a4.png)
 
 
 ||Clique Oracle | Turán Oracle | The Inspector |  Adversary Oracle (straightforward) | Adversary Oracle with Priority Queue |
