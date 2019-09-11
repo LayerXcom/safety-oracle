@@ -1,5 +1,5 @@
 # Safety Oracle
-Safety oracles summaries, analysis and comparison.
+Safety oracles summaries, analysis, and comparison.
 
 The goal of this repository is written here: https://github.com/LayerXcom/safety-oracle/issues/1
 
@@ -25,7 +25,7 @@ For simplicity, we assumed that V <= M <= J <= MV.
 
 The lobbying graph G(V,E) is constructed as follows.
 
-1. Let V be a set of validtor that estimates `CAN_ESTIMATE` and G be a directed graph with vertex set V.
+1. Let V be a set of validator that estimates `CAN_ESTIMATE` and G be a directed graph with vertex set V.
 
 2. Every ordered pair (v1, v2) that satisfies the following conditions is connected by an arrow. 
     - v1 ≠ v2
@@ -33,8 +33,8 @@ The lobbying graph G(V,E) is constructed as follows.
     - The justification of the v2 latest_message includes v1.
     - A v2 message in the v1 latest_message doesn't conflict with `CAN_ESTIMATE`
     - A v1 message in the v2 latest_message doesn't conflict with `CAN_ESTIMATE`
-    - There is no message that conflicts with `CAN_ESTIMATE` among v2 messages that have not been seen yet by v1 but are in the view.
-    - There is no message that conflicts with `CAN_ESTIMATE` among v1 messages that have not been seen yet by v2 but are in the view.
+    - No message conflicts with `CAN_ESTIMATE` among v2 messages that have not been seen yet by v1 but are in the view.
+    - No message conflicts with `CAN_ESTIMATE` among v1 messages that have not been seen yet by v2 but are in the view.
 
 
 ### In images of MessageDAG
@@ -50,11 +50,11 @@ The lobbying graph G(V,E) is constructed as follows.
 
 The above algorithm uses O(V^2) space because E is O(V^2) for any graph.
 
-In 2, checking if the justification of the message includes a validator requires O(1) time on average case using a hash table. For each validator, getting latest messages of the other validators and checking if the latest message conflicts with `CAN_ESTIMATE` requires O(M), so the total running time is O(VM).
+In 2, checking if the justification of the message includes a validator requires O(1) time on average case using a hash table. For each validator, getting the latest messages of the other validators and checking if the latest message conflicts with `CAN_ESTIMATE` requires O(M), so the total running time is O(VM).
 
-However, if you update the lobbying graph every time you get a message, this process can be improved. Updating the graph when a message comes requires O(V) time, because for a message the number of arrows that are newly connected in the MessageDAG is at most V.
+However, if you update the lobbying graph every time you get a message, this process can be improved. Updating the graph when a message comes requires O(V) time because for a message the number of arrows that are newly connected in the MessageDAG is at most V.
 
-The space complexity is O(V^2). Of course, the space complexity of the MessageDAG is O(J), but validator must always have it, so we don't consider it's space in safety oracles.
+The space complexity is O(V^2). Of course, the space complexity of the MessageDAG is O(J), but a validator must always have it, so we don't consider it's space in safety oracles.
 
 <!-- 
 メッセージが来たとき、ADV_ESTIMATEだったら、そのバリデータへ入ってる辺を全て除く O(V)でできる
@@ -88,7 +88,7 @@ Finding a clique requires O*(2^V) time. Even the fastest algorithm requires O*(1
 
 If a validator in C equivocate, the other validators in C can detect the equivocation and aren't affected by it.
 
-For example, the MessageDAG is as the follow image.
+For example, the MessageDAG is as the following image.
 
 ![](https://i.gyazo.com/5c074df481c8bdee2cf0672632c10c44.png)
 
@@ -113,7 +113,7 @@ That is, Clique Oracle can reach 1/3 Byzantine fault tolerance.
 #### Turán theorem
 
 This theorem gives a lower bound on the size of a clique in graphs.
-If a graph has many edges, it contain a large clique.
+If a graph has many edges, it contains a large clique.
 
 Let G be any graph with n vertices, such that G is K_{r+1}-free graph that does not contain (r+1)-vertex clique.
 
@@ -133,9 +133,9 @@ r is a lower bound on the size of clique in graphs with n vertices and |E| edges
 
 2. Convert the graph to an undirected graph.
 
-3. Calculate the minimum size of the maximum weighted clique using above formula in O(1) time.
+3. Calculate the minimum size of the maximum weighted clique using the above formula in O(1) time.
 
-4. Calculate the maximum weigted clique C.
+4. Calculate the maximum weighted clique C.
 
 5. `t = 2 * W(C) - W(V)`. (`q = n/2 + t/2`)
 
@@ -174,7 +174,7 @@ Simple Inspector is a generalization of Clique Oracle.
 
 See: https://hackingresear.ch/cbc-inspector/
 
-Recalculating levels happens worst V times and the recalculation runs in O(J) time, so the total time complexity is O(VJ).
+Recalculating levels happen worst V times and the recalculation runs in O(J) time, so the total time complexity is O(VJ).
 
 #### Metrics
 
@@ -187,7 +187,7 @@ Recalculating levels happens worst V times and the recalculation runs in O(J) ti
 ### Adversary Oracle (necessary and sufficient conditions for finality)
 
 Simulate based on current MessageDAG.
-If the result does not change no matter what happens in all future state, the property is finalized.
+If the result does not change no matter what happens in all future states, the property is finalized.
 But, it is inefficient to simulate every possible future.
 
 ### Adversary Oracle (straightforward, like ethereum/cbc-casper's one)
@@ -197,7 +197,7 @@ This oracle is the simplified simulation algorithm.
 
 #### Algorithm
 
-1. Construct the lobbyin graph or get it.
+1. Construct the lobbying graph or get it.
 
 2. From `view`, we can see that there are validators from which the estimate of the latest messages is `CAN_ESTIMATE` or `ADV_ESTIMATE` or unknown.
 
@@ -209,7 +209,7 @@ This oracle is the simplified simulation algorithm.
                 C.add(v)
 
 
-4. Build `viewables` with the following pseudo code in O(V^2) time.
+4. Build `viewables` with the following pseudocode in O(V^2) time.
 
         for v1 in V:
             for v2 in V:
@@ -246,11 +246,11 @@ This oracle is the simplified simulation algorithm.
         if (total weight of CAN_ESTIMATE) > (total weight of ADV_ESTIMATE):
             the property is finalized
 
-6. If (total weight of `CAN_ESTIMATE`) > (total weight of `ADV_ESTIMATE`) is finally statisfied, the property is finalized.
+6. If (total weight of `CAN_ESTIMATE`) > (total weight of `ADV_ESTIMATE`) is finally satisfied, the property is finalized.
 
 7. `t = min{can_weight - adv_weight}`.
 
-**N.B. The original ethreum/casper's fault tolerance threshold t is the minimum validator weight in C, but we think that it is min{can_weight - adv_weight}**
+**N.B. The original ethereum/casper's fault tolerance threshold t is the minimum validator weight in C, but we think that it is min{can_weight - adv_weight}**
 
 #### Metrics
 
@@ -261,7 +261,7 @@ This oracle is the simplified simulation algorithm.
 
 ### Adversary Oracle with Priority Queue (WIP)
 
-We think that Adversary Oracle be faster using priority queue.
+We think that Adversary Oracle is faster using a priority queue.
 
 #### Using a priority queue
 
@@ -331,7 +331,7 @@ t|4|4|2|3|4
 
 ||Clique Oracle | Turán Oracle | Simple Inspector | Inspector |  Adversary Oracle |
 -|-|-|-|-|-
-t|No finality|No finality|2|2|3
+t|0|0|2|2|3
 
 In this case, Clique Oracle and Turán Oracle can't detect finality.
 
@@ -339,6 +339,6 @@ In this case, Clique Oracle and Turán Oracle can't detect finality.
 
 The `t` of Adversary Oracle is `3`.
 
-In fact, if any two validators equivocate, the consensus `blue` is not overturned.
+If any two validators equivocate, the decision `blue` is not overturned.
 
 ![](https://i.gyazo.com/a26314c81f337ca7f6fea7a554f94c96.png)
