@@ -39,7 +39,7 @@ The lobbying graph G(V,E) is constructed as follows.
 
 ### In images of MessageDAG
 
-![](https://i.gyazo.com/5c33a41a3cb84f25a2a01de4545b6941.png)
+![](https://i.gyazo.com/6640a8550a7ddebdec50e9d804e98fde.png)
 
 #### Complexity
 
