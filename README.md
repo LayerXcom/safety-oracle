@@ -339,6 +339,6 @@ In this case, Clique Oracle and Turán Oracle can't detect finality.
 
 The `t` of Adversary Oracle is `3`.
 
-In fact, if any two validators equivocate, the decision `blue` is not overturned.
+In fact, if any two validators equivocate, the consensus `blue` is not overturned.
 
 ![](https://i.gyazo.com/a26314c81f337ca7f6fea7a554f94c96.png)
