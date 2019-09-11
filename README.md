@@ -23,11 +23,11 @@ For simplicity, we assumed that V <= M <= J <= MV.
 
 ### Lobbying Graph
 
-The lobbying graph G(V,E) is constructed as follows.
+We construct the lobbying graph G(V,E) as follows.
 
 1. Let V be a set of validator that estimates `CAN_ESTIMATE` and G be a directed graph with vertex set V.
 
-2. Every ordered pair (v1, v2) that satisfies the following conditions is connected by an arrow. 
+2. An arrow connects every ordered pair (v1, v2) that satisfies the following conditions. 
     - v1 ≠ v2
     - The justification of the v1 latest_message includes v2.
     - The justification of the v2 latest_message includes v1.
@@ -52,9 +52,9 @@ The above algorithm uses O(V^2) space because E is O(V^2) for any graph.
 
 In 2, checking if the justification of the message includes a validator requires O(1) time on average case using a hash table. For each validator, getting the latest messages of the other validators and checking if the latest message conflicts with `CAN_ESTIMATE` requires O(M), so the total running time is O(VM).
 
-However, if you update the lobbying graph every time you get a message, this process can be improved. Updating the graph when a message comes requires O(V) time because for a message the number of arrows that are newly connected in the MessageDAG is at most V.
+However, if you update the lobbying graph every time you get a message, this process can be improved. Updating the graph when a message comes requires O(V) time because for a message the number of newly connected arrows in the MessageDAG is at most V.
 
-The space complexity is O(V^2). Of course, the space complexity of the MessageDAG is O(J), but a validator must always have it, so we don't consider it's space in safety oracles.
+The space complexity is O(V^2). Of course, the space complexity of the MessageDAG is O(J). However, a validator must always have it, so we don't consider it's space in safety oracles.
 
 <!-- 
 メッセージが来たとき、ADV_ESTIMATEだったら、そのバリデータへ入ってる辺を全て除く O(V)でできる
@@ -94,7 +94,7 @@ For example, the MessageDAG is as the following image.
 
 `t = 2*q - n = 2*6 - 7 = 5`
 
-This means that up to 5-1=4 equivocation failures can be tolerated.
+This formula means that up to 5-1=4 equivocation failures can be tolerated.
 
 Then, suppose 4 validators (C,D,E,F) equivocate. 
 
@@ -174,7 +174,8 @@ Simple Inspector is a generalization of Clique Oracle.
 
 See: https://hackingresear.ch/cbc-inspector/
 
-Recalculating levels happen worst V times and the recalculation runs in O(J) time, so the total time complexity is O(VJ).
+Recalculating levels happen worst V times, and the recalculation runs in O(J) time.
+Therefore the total time complexity is O(VJ).
 
 #### Metrics
 
@@ -248,7 +249,7 @@ This oracle is the simplified simulation algorithm.
 
 6. If (total weight of `CAN_ESTIMATE`) > (total weight of `ADV_ESTIMATE`) is finally satisfied, the property is finalized.
 
-7. `t = min{can_weight - adv_weight}`.
+7. `t = min_{v in C}{(can_weight of v) - (adv_weight of v)}`.
 
 **N.B. The original ethereum/casper's fault tolerance threshold t is the minimum validator weight in C, but we think that it is min{can_weight - adv_weight}**
 
@@ -306,7 +307,7 @@ This image is the relationship between Byzantine (or equivocation) fault toleran
 
 The line `q = n - t` represents the maximum number of honest validators.
 
-Safety oracles that satisfies `q = n/2 + t` can achieve that fault tolerance threshold is `1/4`.
+Safety oracles that satisfies `q = n/2 + t` can achieve that Byzantine fault tolerance threshold is `1/4`.
 On the other hand, safety oracles that satisfies `q = n/2 + t/2` can achieve that it is `1/3`.
 
 ### Sample 1
@@ -339,6 +340,6 @@ In this case, Clique Oracle and Turán Oracle can't detect finality.
 
 The `t` of Adversary Oracle is `3`.
 
-If any two validators equivocate, the decision `blue` is not overturned.
+If any two validators equivocate, the consensus `blue` is not overturned.
 
 ![](https://i.gyazo.com/a26314c81f337ca7f6fea7a554f94c96.png)
