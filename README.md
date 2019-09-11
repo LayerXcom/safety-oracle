@@ -120,7 +120,7 @@ Simple finality detector is a generalization of Clique oracle.
 #### Algorithm
 
 1. Construct the lobbying graph G or get it.
-2. Let q = n/2 + t/2.
+2. Let q = n/2 + t.
 3. Compute outdegree of vertices in G.
 4. C = V.
 4. Look for the vertice with outdegree of q or less in C, remove it from C, and update the outdegree counters.
