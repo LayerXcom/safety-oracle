@@ -71,7 +71,7 @@ CAN_ESTIMATEだったら、色々更新する必要があるが、これも結�
 
 2. Find the maximum weighted clique C of G in **exponential time**.
 
-3. Byzantine fault tolerance threshold `t = 2 * W(C) - W(V)`. (`q = n/2 + t/2`)
+3. Byzantine fault tolerance threshold `t = W(C) - W(V)/2`. (`q = n/2 + t`)
 
 See: https://en.wikipedia.org/wiki/Clique_problem#Finding_maximum_cliques_in_arbitrary_graphs
 
@@ -84,29 +84,24 @@ See: https://en.wikipedia.org/wiki/Clique_problem#Finding_maximum_cliques_in_arb
 
 Finding a clique requires O*(2^V) time. Even the fastest algorithm requires O*(1.1888^V). ( O*(f(k)) = O(f(k) poly(x)) )
 
-#### Why q = n/2 + t/2?
+#### Why q = n/2 + t?
 
-If a validator in C equivocate, the other validators in C can detect the equivocation and aren't affected by it.
+`q = n/2 + t`, so `t = q - n/2`.
 
-For example, the MessageDAG is as the following image.
+![](https://i.gyazo.com/578fab8c55b2c1b83d48013366837dcf.png)
 
-![](https://i.gyazo.com/5c074df481c8bdee2cf0672632c10c44.png)
+In the above case, `n = 8, q = 7, t = 7 - 8/2 = 3`.
 
-`t = 2*q - n = 2*6 - 7 = 5`
+This formula means that up to t-1=2 equivocation failures can be tolerated.
 
-This formula means that up to 5-1=4 equivocation failures can be tolerated.
+2 equivocating validators:
 
-Then, suppose 4 validators (C,D,E,F) equivocate. 
+![](https://i.gyazo.com/6ebde608f9d3fef9054d13d9607248b4.png)
 
-![](https://i.gyazo.com/6cba9f81c57c3294bd0f79cb7ddaa02d.png)
+3 equivocating validators:
 
-A and B can detect the equivocations and ignore them and `W({A,B}) = 2 > W({G}) = 1`.
+![](https://i.gyazo.com/927ff421ec5fef56121922d05a188990.png)
 
-That is, Clique Oracle can reach 1/3 Byzantine fault tolerance.
-
-<!-- 
-クリーク内のバリデータが equivocation をしても、その equivocation にクリーク内のバリデータが影響を受けることはない。
--->
 
 ### Turán Oracle
 
@@ -137,7 +132,7 @@ r is a lower bound on the size of clique in graphs with n vertices and |E| edges
 
 4. Calculate the maximum weighted clique C.
 
-5. `t = 2 * W(C) - W(V)`. (`q = n/2 + t/2`)
+5. `t = W(C) - W(V)/2`. (`q = n/2 + t`)
 
 #### Metrics
 
@@ -176,6 +171,8 @@ See: https://hackingresear.ch/cbc-inspector/
 
 Recalculating levels happen worst V times, and the recalculation runs in O(J) time.
 Therefore the total time complexity is O(VJ).
+
+![](https://i.gyazo.com/51807d0b3067d8f7952d3c5593320848.png)
 
 #### Metrics
 
@@ -249,7 +246,7 @@ This oracle is the simplified simulation algorithm.
 
 6. If (total weight of `CAN_ESTIMATE`) > (total weight of `ADV_ESTIMATE`) is finally satisfied, the property is finalized.
 
-7. `t = min_{v in C}{(can_weight of v) - (adv_weight of v)}`.
+7. `t = min_{v in C}{((can_weight of v) - (adv_weight of v)) / 2}`.
 
 **N.B. The original ethereum/casper's fault tolerance threshold t is the minimum validator weight in C, but we think that it is min{can_weight - adv_weight}**
 
@@ -316,7 +313,7 @@ On the other hand, safety oracles that satisfies `q = n/2 + t/2` can achieve tha
 
 ||Clique Oracle | Turán Oracle | Simple Inspector | Inspector |  Adversary Oracle |
 -|-|-|-|-|-
-t|4|4|2|2|4
+t|2|2|2|2|2
 
 ### Sample 2
 
@@ -324,7 +321,7 @@ t|4|4|2|2|4
 
 ||Clique Oracle | Turán Oracle | Simple Inspector | Inspector |  Adversary Oracle |
 -|-|-|-|-|-
-t|4|4|2|3|4
+t|2|2|2|3|2
 
 ### Sample 3
 
@@ -332,14 +329,10 @@ t|4|4|2|3|4
 
 ||Clique Oracle | Turán Oracle | Simple Inspector | Inspector |  Adversary Oracle |
 -|-|-|-|-|-
-t|0|0|2|2|3
+t|0|0|2|2|2
 
 In this case, Clique Oracle and Turán Oracle can't detect finality.
 
 {A,B,C,D,E} is the quorum set and `q = 4`, so fault tolerance threshold of Simple Inspector and Inspector `t = q - n/2 = 4 - 5/2 = 1.5 <= 2`.
 
-The `t` of Adversary Oracle is `3`.
-
-If any two validators equivocate, the consensus `blue` is not overturned.
-
-![](https://i.gyazo.com/a26314c81f337ca7f6fea7a554f94c96.png)
+The `t` of Adversary Oracle is also `(4-1)/2=1.5 <= 2`.
