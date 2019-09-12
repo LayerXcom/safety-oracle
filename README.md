@@ -23,6 +23,7 @@ MessageDAG is a DAG (directed acyclic graph) of validators' messages.
 
 ![](https://i.gyazo.com/500e7f5223a2c6552e62cbb7d78ac517.png)
 
+
 ### In big-O notation
 
 V: The number of validators.
@@ -48,7 +49,14 @@ We construct the lobbying graph G(V,E) as follows.
     - No message conflicts with `CAN_ESTIMATE` among v2 messages that have not been seen yet by v1 but are in the view.
     - No message conflicts with `CAN_ESTIMATE` among v1 messages that have not been seen yet by v2 but are in the view.
 
+#### Example
 
+
+![](https://i.gyazo.com/c67c8f09f148fdd775d5c639fdbca3c4.png)
+
+The lobbying graph constructed from the above MessageDAG is:
+
+![](https://i.gyazo.com/ee4c3b1d709eec9fb7c6f6e30a7cf05a.png)
 
 #### Complexity
 
@@ -335,7 +343,9 @@ t|1|1|1|1|1
 -|-|-|-|-|-
 t|1|1|1|2|1
 
-In this sample, Inspector fault tolerance threshold is: `t = ceil((1-2^(-2))(2q - n)) - 1 = ceil((3/4)*(8-4)) - 1 = 2`.
+In this sample, Inspector fault tolerance threshold is: 
+
+`t = ceil((1-2^(-2))(2q - n)) - 1 = ceil((3/4)*(8-4)) - 1 = 2`.
 
 ### Sample 3
 
