@@ -334,7 +334,7 @@ In this sample, Inspector fault tolerance threshold is: `t = ceil((1-2^(-2))(2q 
 
 ||Clique Oracle | Turán Oracle | Simple Inspector | Inspector |  Adversary Oracle |
 -|-|-|-|-|-
-t|0|0|2|2|2
+t|0|0|1|1|1
 
 In this case, Clique Oracle and Turán Oracle can't detect finality.
 
