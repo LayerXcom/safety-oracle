@@ -5,11 +5,23 @@ The goal of this repository is written here: https://github.com/LayerXcom/safety
 
 ## Definitions
 
+t: Byzantine (or equivocation) fault tolerance threshold.
+
 `CAN_ESTIMATE`: The candidate estimate.
 
 `ADV_ESTIMATE`: The estimate that the adversary wants to finalize.
 
-t: Byzantine (or equivocation) fault tolerance threshold.
+### MessageDAG
+
+MessageDAG is a DAG (directed acyclic graph) of validators' messages.
+
+#### Message types
+
+![](https://i.gyazo.com/6640a8550a7ddebdec50e9d804e98fde.png)
+
+#### Example
+
+![](https://i.gyazo.com/500e7f5223a2c6552e62cbb7d78ac517.png)
 
 ### In big-O notation
 
@@ -37,9 +49,6 @@ We construct the lobbying graph G(V,E) as follows.
     - No message conflicts with `CAN_ESTIMATE` among v1 messages that have not been seen yet by v2 but are in the view.
 
 
-### In images of MessageDAG
-
-![](https://i.gyazo.com/6640a8550a7ddebdec50e9d804e98fde.png)
 
 #### Complexity
 
@@ -172,7 +181,7 @@ Simple Inspector is a generalization of Clique Oracle.
 
 See: https://hackingresear.ch/cbc-inspector/
 
-For some q (<= V), recalculating levels happen worst V times, and the recalculation runs in O(J) time.
+For some q (<= V), computing levels happen worst V times, and the computation runs in O(J) time.
 Therefore the total time complexity is O(V * V * J) = O(V^2J).
 
 ![](https://i.gyazo.com/76474dcf86e942204f51fdfb83206d22.png)
@@ -240,7 +249,7 @@ This oracle is the simplified simulation algorithm.
                 else:
                     if fault_tolerance == -1:
                         fault_tolerance = can_weight - adv_weight
-                    fault_tolerance = min(fault_tolerance, can_weight - adv_weight)
+                    fault_tolerance = ceil(min(fault_tolerance, can_weight - adv_weight) / 2) - 1
                 
             C.difference_update(to_remove)
         
@@ -334,9 +343,9 @@ In this sample, Inspector fault tolerance threshold is: `t = ceil((1-2^(-2))(2q 
 
 ||Clique Oracle | Turán Oracle | Simple Inspector | Inspector |  Adversary Oracle |
 -|-|-|-|-|-
-t|0|0|1|1|1
+t|-1|-1|1|1|1
 
-In this case, Clique Oracle and Turán Oracle can't detect finality.
+In this case, Clique Oracle and Turán Oracle has not yet detected finality.
 
 {A,B,C,D,E} is the quorum set and `q = 4`, so fault tolerance threshold of Simple Inspector and Inspector `t = ceil(q - n/2) - 1 = ceil(4 - 5/2) - 1 = 1`.
 
