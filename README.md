@@ -71,7 +71,7 @@ CAN_ESTIMATEだったら、色々更新する必要があるが、これも結�
 
 2. Find the maximum weighted clique C of G in **exponential time**.
 
-3. Byzantine fault tolerance threshold `t = W(C) - W(V)/2`. (`q = n/2 + t`)
+3. Byzantine fault tolerance threshold `t = ceil(W(C) - W(V)/2) - 1`. (`q > n/2 + t`)
 
 See: https://en.wikipedia.org/wiki/Clique_problem#Finding_maximum_cliques_in_arbitrary_graphs
 
@@ -84,15 +84,15 @@ See: https://en.wikipedia.org/wiki/Clique_problem#Finding_maximum_cliques_in_arb
 
 Finding a clique requires O*(2^V) time. Even the fastest algorithm requires O*(1.1888^V). ( O*(f(k)) = O(f(k) poly(x)) )
 
-#### Why q = n/2 + t?
+#### Why q > n/2 + t?
 
-`q = n/2 + t`, so `t = q - n/2`.
+`q > n/2 + t`, so `t < q - n/2`.
 
 ![](https://i.gyazo.com/578fab8c55b2c1b83d48013366837dcf.png)
 
-In the above case, `n = 8, q = 7, t = 7 - 8/2 = 3`.
+In the above case, `n = 8, q = 7, t < 7 - 8/2 = 3`.
 
-This formula means that up to t-1=2 equivocation failures can be tolerated.
+This result means that up to t-1=2 equivocation failures can be tolerated.
 
 2 equivocating validators:
 
@@ -102,6 +102,9 @@ This formula means that up to t-1=2 equivocation failures can be tolerated.
 
 ![](https://i.gyazo.com/927ff421ec5fef56121922d05a188990.png)
 
+Therefore, Clique Oracle fault tolerant threshold formula isn't `q > n/2 + t/2`.
+
+When satisfying the formula `q > n/2 + t/2`, `t < 2q - n = 14 - 8 = 6`.
 
 ### Turán Oracle
 
@@ -132,7 +135,7 @@ r is a lower bound on the size of clique in graphs with n vertices and |E| edges
 
 4. Calculate the maximum weighted clique C.
 
-5. `t = W(C) - W(V)/2`. (`q = n/2 + t`)
+5. `t = ceil(W(C) - W(V)/2) - 1`. (`q > n/2 + t`)
 
 #### Metrics
 
@@ -149,12 +152,12 @@ Simple Inspector is a generalization of Clique Oracle.
 #### Algorithm
 
 1. Construct the lobbying graph G or get it.
-2. Let `q = n/2 + t`.
+2. Let `q > n/2 + t`.
 3. Compute outdegree of vertices in G.
 4. C = V.
 4. Look for the vertice with outdegree of q or less in C, remove it from C, and update the outdegree counters.
 5. Repeat 4.
-6. If `W(C) > q`, the property is finalized.
+6. If `W(C) >= q`, the property is finalized.
 
 #### Metrics
 
@@ -169,16 +172,16 @@ Simple Inspector is a generalization of Clique Oracle.
 
 See: https://hackingresear.ch/cbc-inspector/
 
-Recalculating levels happen worst V times, and the recalculation runs in O(J) time.
-Therefore the total time complexity is O(VJ).
+For some q (<= V), recalculating levels happen worst V times, and the recalculation runs in O(J) time.
+Therefore the total time complexity is O(V * V * J) = O(V^2J).
 
-![](https://i.gyazo.com/51807d0b3067d8f7952d3c5593320848.png)
+![](https://i.gyazo.com/76474dcf86e942204f51fdfb83206d22.png)
 
 #### Metrics
 
 || Detect | Detect when a new message comes |
 -|-|-
-| Time complexity | O(VJ) | O(VJ) |
+| Time complexity | O(V^2J) | O(V^2J) |
 | Space complexity | O(J) | - |
 
 
@@ -246,9 +249,9 @@ This oracle is the simplified simulation algorithm.
 
 6. If (total weight of `CAN_ESTIMATE`) > (total weight of `ADV_ESTIMATE`) is finally satisfied, the property is finalized.
 
-7. `t = min_{v in C}{((can_weight of v) - (adv_weight of v)) / 2}`.
+7. `t = ceil(min_{v in C}{(can_weight of v) - (adv_weight of v)} / 2) - 1`.
 
-**N.B. The original ethereum/casper's fault tolerance threshold t is the minimum validator weight in C, but we think that it is min{can_weight - adv_weight}**
+**N.B. The original ethereum/casper's fault tolerance threshold t is the minimum validator weight in C, but we think that it is min{can_weight - adv_weight}/2**
 
 #### Metrics
 
@@ -289,13 +292,13 @@ ethereum/cbc-capser の Adversary Oracle では fault tolerance を the minimum 
 #### Detect finality
 ||Clique Oracle | Turán Oracle | Simple Inspector | Inspector | Adversary Oracle | Adversary Oracle with Priority Queue |
 -|-|-|-|-|-|-
-|Time |exponential| O(V^2 + VM) | O(V^2 + VM) |  O(VJ)  |  O(V^3 + VM) |  O(V^2 + VM)  |
-|Space | - | O(V^2) |  O(V^2 + J) | O(J)  | O(V^2) |  O(V^2) |
+|Time |exponential| O(V^2 + VM) | O(V^2 + VM) |  O(V^2J)  |  O(V^3 + VM) |  O(V^2 + VM)  |
+|Space | - | O(V^2) |  O(V^2) | O(J)  | O(V^2) |  O(V^2) |
 
 #### Detect finality when a new message comes
 ||Clique Oracle | Turán Oracle | Simple Inspector | Inspector | Adversary Oracle | Adversary Oracle with Priority Queue |
 -|-|-|-|-|-|-
-|Time |exponential| O(1) | O(V^2) |  O(VJ)  |  O(V^3) |  O(V^2)  |
+|Time |exponential| O(1) | O(V^2) |  O(V^2J)  |  O(V^3) |  O(V^2)  |
 
 ### Fault tolerance threshold and quorum
 ![](https://i.gyazo.com/02131195fbf9df360f36f36ae5e135a4.png)
@@ -304,8 +307,8 @@ This image is the relationship between Byzantine (or equivocation) fault toleran
 
 The line `q = n - t` represents the maximum number of honest validators.
 
-Safety oracles that satisfies `q = n/2 + t` can achieve that Byzantine fault tolerance threshold is `1/4`.
-On the other hand, safety oracles that satisfies `q = n/2 + t/2` can achieve that it is `1/3`.
+Safety oracles that satisfies `q > n/2 + t` can achieve that Byzantine fault tolerance threshold is `1/4`.
+On the other hand, safety oracles that satisfies `q > n/2 + t/2` can achieve that it is `1/3`.
 
 ### Sample 1
 
@@ -313,7 +316,7 @@ On the other hand, safety oracles that satisfies `q = n/2 + t/2` can achieve tha
 
 ||Clique Oracle | Turán Oracle | Simple Inspector | Inspector |  Adversary Oracle |
 -|-|-|-|-|-
-t|2|2|2|2|2
+t|1|1|1|1|1
 
 ### Sample 2
 
@@ -321,7 +324,9 @@ t|2|2|2|2|2
 
 ||Clique Oracle | Turán Oracle | Simple Inspector | Inspector |  Adversary Oracle |
 -|-|-|-|-|-
-t|2|2|2|3|2
+t|1|1|1|2|1
+
+In this sample, Inspector fault tolerance threshold is: `t = ceil((1-2^(-2))(2q - n)) - 1 = ceil((3/4)*(8-4)) - 1 = 2`.
 
 ### Sample 3
 
@@ -333,6 +338,15 @@ t|0|0|2|2|2
 
 In this case, Clique Oracle and Turán Oracle can't detect finality.
 
-{A,B,C,D,E} is the quorum set and `q = 4`, so fault tolerance threshold of Simple Inspector and Inspector `t = q - n/2 = 4 - 5/2 = 1.5 <= 2`.
+{A,B,C,D,E} is the quorum set and `q = 4`, so fault tolerance threshold of Simple Inspector and Inspector `t = ceil(q - n/2) - 1 = ceil(4 - 5/2) - 1 = 1`.
 
-The `t` of Adversary Oracle is also `(4-1)/2=1.5 <= 2`.
+The `t` of Adversary Oracle is also `ceil((4-1)/2) - 1 = 1`.
+
+### Sample 4
+
+![](https://i.gyazo.com/578fab8c55b2c1b83d48013366837dcf.png)
+
+||Clique Oracle | Turán Oracle | Simple Inspector | Inspector |  Adversary Oracle |
+-|-|-|-|-|-
+t|2|2|2|2|2
+
