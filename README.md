@@ -11,6 +11,7 @@ t: Byzantine (or equivocation) fault tolerance threshold.
 
 `ADV_ESTIMATE`: The estimate that the adversary wants to finalize.
 
+
 ### MessageDAG
 
 MessageDAG is a DAG (directed acyclic graph) of validators' messages.
@@ -65,13 +66,12 @@ The lobbying graph constructed from the above MessageDAG is:
 |Time | O(V^2 + VM) | O(V) |
 |Space | O(V^2) | - |
 
-The above algorithm uses O(V^2) space because E is O(V^2) for any graph.
-
-In 2, checking if the justification of the message includes a validator requires O(1) time on average case using a hash table. For each validator, getting the latest messages of the other validators and checking if the latest message conflicts with `CAN_ESTIMATE` requires O(M), so the total running time is O(VM).
+In 2, checking if the justification of the message includes a validator requires O(1) time on average case using a hash table. For each validator, getting the latest messages of the other validators and checking if the latest message conflicts with `CAN_ESTIMATE` requires O(M).
+Therefore, the total running time is O(VM).
 
 However, if you update the lobbying graph every time you get a message, this process can be improved. Updating the graph when a message comes requires O(V) time because for a message the number of newly connected arrows in the MessageDAG is at most V.
 
-The space complexity is O(V^2). Of course, the space complexity of the MessageDAG is O(J). However, a validator must always have it, so we don't consider it's space in safety oracles.
+The space complexity is O(V^2) because E is O(V^2) for any graph. Of course, the space complexity of the MessageDAG is O(J). However, a validator must always have it, so we don't consider it's space in safety oracles.
 
 <!-- 
 メッセージが来たとき、ADV_ESTIMATEだったら、そのバリデータへ入ってる辺を全て除く O(V)でできる
@@ -99,7 +99,7 @@ See: https://en.wikipedia.org/wiki/Clique_problem#Finding_maximum_cliques_in_arb
 | Time complexity | exponential| exponential |
 | Space complexity | -  | - |
 
-Finding a clique requires O*(2^V) time. Even the fastest algorithm requires O*(1.1888^V). ( O*(f(k)) = O(f(k) poly(x)) )
+Finding a clique requires O*(2^V) time. Even [the fastest algorithm](https://www.labri.fr/perso/robson/mis/techrep.html) requires O*(1.1888^V). ( O*(f(k)) = O(f(k) poly(x)) )
 
 #### Why q > n/2 + t?
 
