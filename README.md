@@ -83,16 +83,16 @@ In practice, we can assume that V <= M <= J <= MV.
 
 We construct a *lobbying graph* `G(V,E)` as follows.
 
-1. Let V be a set of validators that estimates `CAN_ESTIMATE` and `G` be a directed graph with a set of vertices `V`.
+1. Let `V` be a set of validators that estimates `CAN_ESTIMATE` in their latest message and `G` be a directed graph with a set of vertices `V`.
 
-2. An arrow connects every ordered pair (v1, v2) that satisfies the following conditions. 
+2. An edge is directed from `v1` to `v2` that satisfies the following conditions. 
     - v1 ≠ v2
-    - The justification of the v1 latest_message includes v2.
-    - The justification of the v2 latest_message includes v1.
-    - A v2 message in the v1 latest_message doesn't conflict with `CAN_ESTIMATE`
-    - A v1 message in the v2 latest_message doesn't conflict with `CAN_ESTIMATE`
-    - No message conflicts with `CAN_ESTIMATE` among v2 messages that have not been seen yet by v1 but are in the view.
-    - No message conflicts with `CAN_ESTIMATE` among v1 messages that have not been seen yet by v2 but are in the view.
+    - The justification of the latest message of `v1` includes a message of `v2`
+    - The justification of the latest message of `v2` includes a message of `v1`
+    - The latest message of `v2` in the justification of the latest message of `v1` does not conflict with `CAN_ESTIMATE`
+    - The latest message of `v1` in the justification of the latest message of `v2` does not conflict with `CAN_ESTIMATE`
+    - No message conflicts with `CAN_ESTIMATE` among the messages of `v2` that `v1` have not seen yet
+    - No message conflicts with `CAN_ESTIMATE` among the messages of `v1` that `v2` have not seen yet
 
 #### Example
 
@@ -377,7 +377,7 @@ The line `q = n - t` represents the maximum number of honest validators.
 Safety oracles that satisfies `q > n/2 + t` can achieve that Byzantine fault tolerance threshold is `1/4`.
 On the other hand, safety oracles that satisfies `q > n/2 + t/2` can achieve that it is `1/3`.
 
-### Sample 1
+#### Example 1
 
 ![](https://i.gyazo.com/f10641dcf34ae64353666fb32b41a63f.png)
 
@@ -385,7 +385,7 @@ On the other hand, safety oracles that satisfies `q > n/2 + t/2` can achieve tha
 -|-|-|-|-|-
 t|1|1|1|1|1
 
-### Sample 2
+#### Example 2
 
 ![](https://i.gyazo.com/9d69aa78d3ea09a9b2b8dc4bd051388c.png)
 
@@ -397,7 +397,7 @@ In this sample, Inspector fault tolerance threshold is:
 
 `t = ceil((1-2^(-2))(2q - n)) - 1 = ceil((3/4)*(8-4)) - 1 = 2`.
 
-### Sample 3
+#### Example 3
 
 ![](https://i.gyazo.com/57bb43bd029919552f6f11ebbd074261.png)
 
@@ -411,7 +411,7 @@ In this case, Clique Oracle and Turán Oracle has not yet detected finality.
 
 The `t` of Adversary Oracle is also `ceil((4-1)/2) - 1 = 1`.
 
-### Sample 4
+#### Example 4
 
 ![](https://i.gyazo.com/578fab8c55b2c1b83d48013366837dcf.png)
 
