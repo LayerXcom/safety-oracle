@@ -117,9 +117,13 @@ However, if you update the lobbying graph every time you get a message, this pro
 The space complexity is `O(V^2)` because `E` is `O(V^2)` for any graph. Of course, the space complexity of the MessageDAG is `O(J)`. However, a validator must always have it, so we don't consider it's space in safety oracles.
 
 
-## Summaries
+## Clique Oracle
 
-### Clique Oracle
+Clique oracle is a family of algorithms to find a *clique* of vaidators.
+
+### 2-round Clique Oracle
+
+This is the most naive clique oracle which try to find a maximal weight clique.
 
 #### Algorithm
 
@@ -203,9 +207,16 @@ r is a lower bound on the size of clique in graphs with n vertices and |E| edges
 | Space complexity | O(V^2) | - |
 
 
+### 3-round Clique oracle
+
+WIP [Issue](https://github.com/LayerXcom/safety-oracle/issues/3)
+
+
+## Finality Inspector
+
 ### Simple Inspector
 
-Simple Inspector is a generalization of Clique Oracle.
+Simple Inspector is a generalization of 2-round Clique Oracle.
 
 #### Algorithm
 
@@ -243,16 +254,14 @@ Therefore the total time complexity is O(V * V * J) = O(V^2J).
 | Space complexity | O(J) | - |
 
 
-### Adversary Oracle (necessary and sufficient conditions for finality)
+## Adversary Oracle
 
-Simulate based on current MessageDAG.
-If the result does not change no matter what happens in all future states, the property is finalized.
-But, it is inefficient to simulate every possible future.
+Adversary oracle is a family of algorithms based on the simulation of an adversary.
 
-### Adversary Oracle (straightforward, like ethereum/cbc-casper's one)
-Ref: https://github.com/ethereum/cbc-casper/blob/master/casper/safety_oracles/adversary_oracle.py
+### Adversary Oracle (straightforward)
+Ref: [ethereum/cbc-casper](https://github.com/ethereum/cbc-casper/blob/master/casper/safety_oracles/adversary_oracle.py)
 
-This oracle is the simplified simulation algorithm.
+This oracle is a simple simulation-based algorithm.
 
 #### Algorithm
 
@@ -322,17 +331,12 @@ This oracle is the simplified simulation algorithm.
 
 We think that Adversary Oracle is faster using a priority queue.
 
-#### Using a priority queue
-
 <!-- 
+#### Using a priority queue
 ethereum/cbc-capser の Adversary Oracle では fault tolerance を the minimum validator weight としているが、fault tolerance は min { can_weight - adv_weight } でもいいと考えられる。なぜなら can_weight - adv_weight が最も小さいバリデータが意見を変えなければ、Cは変わらない。そして、(total weight of `CAN_ESTIMATE`) > (total weight of `ADV_ESTIMATE`) は依然成り立つためである。
 
 また、意見を最も変えやすいノードを優先して調べればいいため、priority queue を使って調べるバリデータを管理すれば、より高速に最終的なCを調べることができる。
 -->
-
-#### Detect all finality that Clique Oracle can do
-
-// introducing the idea of observable equivocations
 
 #### Metrics
 
@@ -342,8 +346,13 @@ ethereum/cbc-capser の Adversary Oracle では fault tolerance を the minimum 
 | Space complexity | O(V^2) | - |
 
 
-## Comparison
+### Ideal Oracle 
+We can construct an oracle which is equivalent to the necessary and sufficient conditions of finality by simulating all the possible state transitions.
+If the consensus value does not change in any reachable future states, the property is considered finalized.
+Although this is the best about the completeness, it would be extraordinary inefficient so we omit here about the detail.
 
+
+## Comparison
 
 ### Complexity
 
