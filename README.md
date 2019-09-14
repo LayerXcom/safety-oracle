@@ -3,6 +3,48 @@ Safety oracles summaries, analysis, and comparison.
 
 The goal of this repository is written here: https://github.com/LayerXcom/safety-oracle/issues/1
 
+## Table of Contents
+* [Definitions](#definitions)
+   * [MessageDAG](#messagedag)
+      * [Message types](#message-types)
+      * [Example](#example)
+   * [In big-O notation](#in-big-o-notation)
+   * [Lobbying Graph](#lobbying-graph)
+      * [Example](#example-1)
+      * [Complexity](#complexity)
+* [Summaries](#summaries)
+   * [Clique Oracle](#clique-oracle)
+      * [Algorithm](#algorithm)
+      * [Metrics](#metrics)
+      * [Why q &gt; n/2   t?](#why-q--n2--t)
+   * [Turán Oracle](#turán-oracle)
+      * [Turán theorem](#turán-theorem)
+      * [Algorithm](#algorithm-1)
+      * [Metrics](#metrics-1)
+   * [Simple Inspector](#simple-inspector)
+      * [Algorithm](#algorithm-2)
+      * [Metrics](#metrics-2)
+   * [Inspector](#inspector)
+      * [Algorithm](#algorithm-3)
+      * [Metrics](#metrics-3)
+   * [Adversary Oracle (necessary and sufficient conditions for finality)](#adversary-oracle-necessary-and-sufficient-conditions-for-finality)
+   * [Adversary Oracle (straightforward, like ethereum/cbc-casper's one)](#adversary-oracle-straightforward-like-ethereumcbc-caspers-one)
+      * [Algorithm](#algorithm-4)
+      * [Metrics](#metrics-4)
+   * [Adversary Oracle with Priority Queue (WIP)](#adversary-oracle-with-priority-queue-wip)
+      * [Using a priority queue](#using-a-priority-queue)
+      * [Detect all finality that Clique Oracle can do](#detect-all-finality-that-clique-oracle-can-do)
+      * [Metrics](#metrics-5)
+* [Comparison](#comparison)
+   * [Complexity](#complexity-1)
+      * [Detect finality](#detect-finality)
+      * [Detect finality when a new message comes](#detect-finality-when-a-new-message-comes)
+   * [Fault tolerance threshold and quorum](#fault-tolerance-threshold-and-quorum)
+   * [Sample 1](#sample-1)
+   * [Sample 2](#sample-2)
+   * [Sample 3](#sample-3)
+   * [Sample 4](#sample-4)
+
 ## Definitions
 
 t: Byzantine (or equivocation) fault tolerance threshold.
