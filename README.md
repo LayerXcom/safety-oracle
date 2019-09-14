@@ -135,7 +135,7 @@ This is the most naive clique oracle which tries to find a maximal weight clique
 
 3. Find the maximum weighted clique `C` of `G` in **exponential time**.
 
-4. Byzantine fault tolerance threshold `t = ceil(W(C) - W(V)/2) - 1`. (`q > n/2 + t`)
+4. Byzantine fault tolerance is `t = ceil(W(C) - W(V)/2) - 1`. (`q > n/2 + t`)
 
 See: https://en.wikipedia.org/wiki/Clique_problem#Finding_maximum_cliques_in_arbitrary_graphs
 
@@ -320,7 +320,7 @@ This oracle is a simple simulation-based algorithm.
 
 7. `t = ceil(min_{v in C}{(can_weight of v) - (adv_weight of v)} / 2) - 1`.
 
-**N.B. The original ethereum/casper's fault tolerance threshold t is the minimum validator weight in C, but we think that it is min{can_weight - adv_weight}/2**
+**N.B. The original ethereum/casper's fault tolerance t is the minimum validator weight in C, but we think that it is min{can_weight - adv_weight}/2**
 
 #### Metrics
 
@@ -369,7 +369,7 @@ Although this is the best about the completeness, it would be extraordinary inef
 -|-|-|-|-|-|-
 |Time |exponential| O(1) | O(V^2) |  O(V^2J)  |  O(V^3) |  O(V^2)  |
 
-### Fault tolerance threshold and quorum
+### Fault tolerance and quorum
 ![](https://i.gyazo.com/02131195fbf9df360f36f36ae5e135a4.png)
 
 This shows the relationship between Byzantine fault tolerance (for both safety and liveeness) and the quorum of safety oracle.
