@@ -2,7 +2,7 @@
 This is a comprehensive summary of safety oracle, finality detection mechanisms of CBC Casper.  
 (See [this slide](https://docs.google.com/presentation/d/1j8u8RabU_p7gc6kP3SEoMn_-8Ezmh-7mMij_Iy4DsOE) for a general introduction of CBC Casper and [this post](https://hackingresear.ch/cbc-finality/index.html) about finality detection in CBC Casper.)  
 We introduce various existing proposals on safety oracle, describe the algorithms and compare them.
-The goal of this project is [here](https://github.com/LayerXcom/safety-oracle/issues/1)
+The goal of this project is [here](https://github.com/LayerXcom/safety-oracle/issues/1).
 
 
 ## Table of Contents
@@ -372,12 +372,11 @@ Although this is the best about the completeness, it would be extraordinary inef
 ### Fault tolerance threshold and quorum
 ![](https://i.gyazo.com/02131195fbf9df360f36f36ae5e135a4.png)
 
-This image is the relationship between Byzantine (or equivocation) fault tolerance threshold and quorum.
-
-The line `q = n - t` represents the maximum number of honest validators.
-
-Safety oracles that satisfy `q > n/2 + t` can achieve that Byzantine fault tolerance threshold is `1/4`.
-On the other hand, safety oracles that satisfy `q > n/2 + t/2` can achieve that it is `1/3`.
+This shows the relationship between Byzantine fault tolerance (for both safety and liveeness) and the quorum of safety oracle.
+The `q = n - t` line is the maximum number of honest validators.
+For liveness, the quorum must be less than or equal to this line.
+The safety oracles whose quorum condition is `q > n/2 + t` achieve `n/4` Byzantine fault tolerance.
+On the other hand, safety oracles that uses `q > n/2 + t/2` achieve `n/3`.
 
 #### Example 1
 
