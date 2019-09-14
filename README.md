@@ -1,7 +1,9 @@
 # Safety Oracle
-Safety oracles summaries, analysis, and comparison.
+This is a comprehensive summary of safety oracle, finality detection mechanisms of CBC Casper.  
+(See [this slide](https://docs.google.com/presentation/d/1j8u8RabU_p7gc6kP3SEoMn_-8Ezmh-7mMij_Iy4DsOE) for a general introduction of CBC Casper and [this post](https://hackingresear.ch/cbc-finality/index.html) about finality detection in CBC Casper.)  
+We introduce various existing proposals on safety oracle, describe the algorithms and compare them.
+The goal of this project is [here](https://github.com/LayerXcom/safety-oracle/issues/1)
 
-The goal of this repository is written here: https://github.com/LayerXcom/safety-oracle/issues/1
 
 ## Table of Contents
 * [Definitions](#definitions)
@@ -47,7 +49,7 @@ The goal of this repository is written here: https://github.com/LayerXcom/safety
 
 ## Definitions
 
-t: Byzantine (or equivocation) fault tolerance threshold.
+`t`: Byzantine (or equivocation) fault tolerance.
 
 `CAN_ESTIMATE`: The candidate estimate.
 
@@ -56,7 +58,7 @@ t: Byzantine (or equivocation) fault tolerance threshold.
 
 ### MessageDAG
 
-MessageDAG is a DAG (directed acyclic graph) of validators' messages.
+*MessageDAG* is a DAG (directed acyclic graph) of messages where edges are directed from a message to the messages in its justification.
 
 #### Message types
 
@@ -67,21 +69,21 @@ MessageDAG is a DAG (directed acyclic graph) of validators' messages.
 ![](https://i.gyazo.com/500e7f5223a2c6552e62cbb7d78ac517.png)
 
 
-### In big-O notation
+### Notations
 
-V: The number of validators.
+`V`: The number of validators.
 
-M: The number of messages(vertices) in the MessageDAG.
+`M`: The number of messages(vertices) in the MessageDAG.
 
-J: The number of arrows in the MessageDAG.
+`J`: The number of arrows in the MessageDAG.
 
-For simplicity, we assumed that V <= M <= J <= MV.
+In practice, we can assume that V <= M <= J <= MV.
 
 ### Lobbying Graph
 
-We construct the lobbying graph G(V,E) as follows.
+We construct a *lobbying graph* `G(V,E)` as follows.
 
-1. Let V be a set of validator that estimates `CAN_ESTIMATE` and G be a directed graph with vertex set V.
+1. Let V be a set of validators that estimates `CAN_ESTIMATE` and `G` be a directed graph with a set of vertices `V`.
 
 2. An arrow connects every ordered pair (v1, v2) that satisfies the following conditions. 
     - v1 ≠ v2
@@ -93,7 +95,6 @@ We construct the lobbying graph G(V,E) as follows.
     - No message conflicts with `CAN_ESTIMATE` among v1 messages that have not been seen yet by v2 but are in the view.
 
 #### Example
-
 
 ![](https://i.gyazo.com/c67c8f09f148fdd775d5c639fdbca3c4.png)
 
@@ -108,12 +109,12 @@ The lobbying graph constructed from the above MessageDAG is:
 |Time | O(V^2 + VM) | O(V) |
 |Space | O(V^2) | - |
 
-In 2, checking if the justification of the message includes a validator requires O(1) time on average case using a hash table. For each validator, getting the latest messages of the other validators and checking if the latest message conflicts with `CAN_ESTIMATE` requires O(M).
-Therefore, the total running time is O(VM).
+In 2, checking if the justification of the message includes a validator requires `O(1)` time on average case using a hash table. For each validator, getting the latest messages of the other validators and checking if the latest message conflicts with `CAN_ESTIMATE` requires `O(M)`.
+Therefore, the total running time is `O(VM)`.
 
-However, if you update the lobbying graph every time you get a message, this process can be improved. Updating the graph when a message comes requires O(V) time because for a message the number of newly connected arrows in the MessageDAG is at most V.
+However, if you update the lobbying graph every time you get a message, this process can be improved. Updating the graph when a message comes requires O(V) time because for a message the number of newly connected arrows in the MessageDAG is at most `V`.
 
-The space complexity is O(V^2) because E is O(V^2) for any graph. Of course, the space complexity of the MessageDAG is O(J). However, a validator must always have it, so we don't consider it's space in safety oracles.
+The space complexity is `O(V^2)` because `E` is `O(V^2)` for any graph. Of course, the space complexity of the MessageDAG is `O(J)`. However, a validator must always have it, so we don't consider it's space in safety oracles.
 
 <!-- 
 メッセージが来たとき、ADV_ESTIMATEだったら、そのバリデータへ入ってる辺を全て除く O(V)でできる
@@ -128,9 +129,11 @@ CAN_ESTIMATEだったら、色々更新する必要があるが、これも結�
 
 1. Construct the lobbying graph or get it.
 
-2. Find the maximum weighted clique C of G in **exponential time**.
+2. Convert the lobbying graph to an undirected graph by connecting edges (valdiators) connected bidirectionally.
 
-3. Byzantine fault tolerance threshold `t = ceil(W(C) - W(V)/2) - 1`. (`q > n/2 + t`)
+3. Find the maximum weighted clique C of G in **exponential time**.
+
+4. Byzantine fault tolerance threshold `t = ceil(W(C) - W(V)/2) - 1`. (`q > n/2 + t`)
 
 See: https://en.wikipedia.org/wiki/Clique_problem#Finding_maximum_cliques_in_arbitrary_graphs
 
@@ -188,7 +191,7 @@ r is a lower bound on the size of clique in graphs with n vertices and |E| edges
 
 1. Construct the lobbying graph or get it.
 
-2. Convert the graph to an undirected graph.
+2. Convert the lobbying graph to an undirected graph by connecting edges (valdiators) connected bidirectionally.
 
 3. Calculate the minimum size of the maximum weighted clique using the above formula in O(1) time.
 
