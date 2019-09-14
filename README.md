@@ -116,10 +116,6 @@ However, if you update the lobbying graph every time you get a message, this pro
 
 The space complexity is `O(V^2)` because `E` is `O(V^2)` for any graph. Of course, the space complexity of the MessageDAG is `O(J)`. However, a validator must always have it, so we don't consider it's space in safety oracles.
 
-<!-- 
-メッセージが来たとき、ADV_ESTIMATEだったら、そのバリデータへ入ってる辺を全て除く O(V)でできる
-CAN_ESTIMATEだったら、色々更新する必要があるが、これも結局色々情報を持っておけばO(V)でできる
--->
 
 ## Summaries
 
