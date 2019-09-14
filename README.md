@@ -1,7 +1,7 @@
 # Safety Oracle
-This is a comprehensive summary of safety oracle, finality detection mechanisms of CBC Casper.  
+This document is a comprehensive summary of safety oracles, finality detection mechanisms of CBC Casper.  
 (See [this slide](https://docs.google.com/presentation/d/1j8u8RabU_p7gc6kP3SEoMn_-8Ezmh-7mMij_Iy4DsOE) for a general introduction of CBC Casper and [this post](https://hackingresear.ch/cbc-finality/index.html) about finality detection in CBC Casper.)  
-We introduce various existing proposals on safety oracle, describe the algorithms and compare them.
+We introduce various existing proposals on safety oracles, describe the algorithms, and compare them.
 The goal of this project is [here](https://github.com/LayerXcom/safety-oracle/issues/1).
 
 
@@ -86,7 +86,7 @@ In practice, we can assume that `V <= M <= J <= MV`.
 We construct a *lobbying graph* `G(V, E)` as follows.
 
 1. Let `V` be a set of validators that estimates `CAN_ESTIMATE` in their latest message and `G` be a directed graph with a set of vertices `V`.
-
+ 
 2. An edge is directed from `v1` to `v2` that satisfies the following conditions. 
     - v1 ≠ v2
     - The justification of the latest message of `v1` includes a message of `v2`
@@ -118,22 +118,22 @@ Therefore, the overall complexity is `O(VM)`.
 However, if you keep the lobbying graph and update every time you receive a message, this process can be improved.
 It only requires `O(V)` to update the graph in receiving a message because the number of newly connected edges in the MessageDAG is at most `V` for a message.
 
-The space complexity is `O(V^2)` because `E` is `O(V^2)` for any graph. Of course, the space complexity of the MessageDAG is `O(J)`. However, a validator must always have it, so we don't consider it's space in safety oracles.
+The space complexity is `O(V^2)` because `E` is `O(V^2)` for any graph. Of course, the space complexity of the MessageDAG is `O(J)`. However, a validator must always have it, so we do not consider it's space in safety oracles.
 
 
 ## Clique Oracle
 
-Clique oracle is a family of algorithms to find a *clique* of validators.
+The clique oracle is a family of algorithms to find a *clique* of validators.
 
 ### 2-round Clique Oracle
 
-This is the most naive clique oracle which tries to find a maximal weight clique.
+This oracle is the most naive clique oracle which tries to find a maximal weight clique.
 
 #### Algorithm
 
 1. Construct the lobbying graph or get it.
 
-2. Convert the lobbying graph to an undirected graph by connecting edges (validators) connected bidirectionally.
+2. Convert the lobbying graph to an undirected graph by connecting vertices (validators) connected bidirectionally.
 
 3. Find the maximum weighted clique `C` of `G` in **exponential time**.
 
@@ -168,7 +168,7 @@ This result means that up to t-1=2 equivocation failures can be tolerated.
 
 ![](https://i.gyazo.com/927ff421ec5fef56121922d05a188990.png)
 
-Therefore, Clique Oracle fault tolerant threshold formula isn't `q > n/2 + t/2`.
+Therefore, the clique oracle fault tolerant threshold formula is not `q > n/2 + t/2`.
 
 When satisfying the formula `q > n/2 + t/2`, `t < 2q - n = 14 - 8 = 6`.
 
@@ -211,7 +211,7 @@ Let `E` be the set of edges in `G`.
 | Space complexity | O(V^2) | - |
 
 
-### 3-round Clique oracle
+### 3-round Clique Oracle
 
 WIP [Issue](https://github.com/LayerXcom/safety-oracle/issues/3)
 
@@ -220,7 +220,7 @@ WIP [Issue](https://github.com/LayerXcom/safety-oracle/issues/3)
 
 ### Simple Inspector
 
-Simple Inspector is a generalization of 2-round Clique Oracle.
+The Simple Inspector is a generalization of 2-round clique oracle.
 
 #### Algorithm
 
@@ -260,7 +260,7 @@ Therefore the total time complexity is `O(V * V * J) = O(V^2J)`.
 
 ## Adversary Oracle
 
-Adversary oracle is a family of algorithms based on the simulation of an adversary.
+Adversary oracles is a family of algorithms based on the simulation of an adversary.
 
 ### Adversary Oracle (straightforward)
 Ref: [ethereum/cbc-casper](https://github.com/ethereum/cbc-casper/blob/master/casper/safety_oracles/adversary_oracle.py)
@@ -353,7 +353,7 @@ ethereum/cbc-capser の Adversary Oracle では fault tolerance を the minimum 
 ### Ideal Oracle 
 We can construct an oracle which is equivalent to the necessary and sufficient conditions of finality by simulating all the possible state transitions.
 If the consensus value does not change in any reachable future states, the property is considered finalized.
-Although this is the best about the completeness, it would be extraordinary inefficient so we omit here about the detail.
+Although this is the best about the completeness, it would be extraordinary inefficient, so we omit here about the detail.
 
 
 ## Comparison
@@ -374,11 +374,11 @@ Although this is the best about the completeness, it would be extraordinary inef
 ### Fault tolerance and quorum
 ![](https://i.gyazo.com/02131195fbf9df360f36f36ae5e135a4.png)
 
-This shows the relationship between Byzantine fault tolerance (for both safety and liveeness) and the quorum of safety oracle.
+This image shows the relationship between Byzantine fault tolerance (for both safety and liveness) and the quorum of safety oracles.
 The `q = n - t` line is the maximum number of honest validators.
 For liveness, the quorum must be less than or equal to this line.
 The safety oracles whose quorum condition is `q > n/2 + t` achieve `n/4` Byzantine fault tolerance.
-On the other hand, safety oracles that uses `q > n/2 + t/2` achieve `n/3`.
+On the other hand, safety oracles that use `q > n/2 + t/2` achieve `n/3`.
 
 #### Example 1
 
@@ -396,7 +396,7 @@ t|1|1|1|1|1
 -|-|-|-|-|-
 t|1|1|1|2|1
 
-In this sample, Inspector fault tolerance threshold is: 
+In this sample, the Inspector fault tolerance threshold is: 
 
 `t = ceil((1-2^(-2))(2q - n)) - 1 = ceil((3/4)*(8-4)) - 1 = 2`.
 
@@ -408,11 +408,11 @@ In this sample, Inspector fault tolerance threshold is:
 -|-|-|-|-|-
 t|N/A|N/A|1|1|1
 
-In this case, Clique Oracle and Turán Oracle have not yet detected finality.
+In this case, the clique oracle and the Turán oracle have not yet detected finality.
 
-`{A,B,C,D,E}` is the quorum set and `q = 4`, so fault tolerance threshold of Simple Inspector and Inspector `t = ceil(q - n/2) - 1 = ceil(4 - 5/2) - 1 = 1`.
+`{A,B,C,D,E}` is the quorum set and `q = 4`, so fault tolerance threshold of the Simple Inspector and the Inspector `t = ceil(q - n/2) - 1 = ceil(4 - 5/2) - 1 = 1`.
 
-The `t` of Adversary Oracle is also `ceil((4-1)/2) - 1 = 1`.
+The `t` of the adversary oracle is also `ceil((4-1)/2) - 1 = 1`.
 
 #### Example 4
 
