@@ -104,7 +104,7 @@ The lobbying graph constructed from the above MessageDAG is:
 
 #### Complexity
 
-||Construct|Update when a new message comes|
+||Construct|Update for a new message|
 -|-|-
 |Time | O(V^2 + VM) | O(V) |
 |Space | O(V^2) | - |
@@ -141,7 +141,7 @@ See: https://en.wikipedia.org/wiki/Clique_problem#Finding_maximum_cliques_in_arb
 
 #### Metrics
 
-|| Detect | Detect when a new message comes|
+|| From scratch | For a new message |
 -|-|-
 | Time complexity | exponential| exponential |
 | Space complexity | -  | - |
@@ -203,7 +203,7 @@ Let `E` be the set of edges in `G`.
 
 #### Metrics
 
-|| Detect | Detect when a new message comes|
+|| From scratch | For a new message |
 -|-|-
 | Time complexity | O(V^2 + VM)| O(1) |
 | Space complexity | O(V^2) | - |
@@ -232,7 +232,7 @@ Simple Inspector is a generalization of 2-round Clique Oracle.
 
 #### Metrics
 
-|| Detect | Detect when a new message comes|
+|| From scratch | For a new message |
 -|-|-
 | Time complexity | O(V^2 + VM)| O(V^2) |
 | Space complexity | O(V^2) | - |
@@ -250,7 +250,7 @@ Therefore the total time complexity is `O(V * V * J) = O(V^2J)`.
 
 #### Metrics
 
-|| Detect | Detect when a new message comes |
+|| From scratch | For a new message |
 -|-|-
 | Time complexity | O(V^2J) | O(V^2J) |
 | Space complexity | O(J) | - |
@@ -324,7 +324,7 @@ This oracle is a simple simulation-based algorithm.
 
 #### Metrics
 
-|| Detect | Detect when a new message comes |
+|| From scratch | For a new message |
 -|-|-
 | Time complexity | O(V^3 + VM) | O(V^3) |
 | Space complexity | O(V^2) | - |
@@ -342,7 +342,7 @@ ethereum/cbc-capser の Adversary Oracle では fault tolerance を the minimum 
 
 #### Metrics
 
-|| Detect | Detect when a new message comes |
+|| From scratch | For a new message |
 -|-|-
 | Time complexity | O(V^2 + VM) | O(V^2) |
 | Space complexity | O(V^2) | - |
@@ -358,13 +358,13 @@ Although this is the best about the completeness, it would be extraordinary inef
 
 ### Complexity
 
-#### Detect finality
+#### Detection from scratch
 ||Clique Oracle | Turán Oracle | Simple Inspector | Inspector | Adversary Oracle | Adversary Oracle with Priority Queue |
 -|-|-|-|-|-|-
 |Time |exponential| O(V^2 + VM) | O(V^2 + VM) |  O(V^2J)  |  O(V^3 + VM) |  O(V^2 + VM)  |
 |Space | - | O(V^2) |  O(V^2) | O(J)  | O(V^2) |  O(V^2) |
 
-#### Detect finality when a new message comes
+#### Detection for a new message
 ||Clique Oracle | Turán Oracle | Simple Inspector | Inspector | Adversary Oracle | Adversary Oracle with Priority Queue |
 -|-|-|-|-|-|-
 |Time |exponential| O(1) | O(V^2) |  O(V^2J)  |  O(V^3) |  O(V^2)  |
@@ -404,7 +404,7 @@ In this sample, Inspector fault tolerance threshold is:
 
 ||Clique Oracle | Turán Oracle | Simple Inspector | Inspector |  Adversary Oracle |
 -|-|-|-|-|-
-t|-1|-1|1|1|1
+t|N/A|N/A|1|1|1
 
 In this case, Clique Oracle and Turán Oracle have not yet detected finality.
 
