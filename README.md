@@ -77,7 +77,7 @@ The goal of this project is [here](https://github.com/LayerXcom/safety-oracle/is
 
 `J`: The number of arrows in the MessageDAG.
 
-In practice, we can assume that V <= M <= J <= MV.
+In practice, we can assume that `V <= M <= J <= MV`.
 
 ### Lobbying Graph
 
@@ -131,7 +131,7 @@ This is the most naive clique oracle which try to find a maximal weight clique.
 
 2. Convert the lobbying graph to an undirected graph by connecting edges (valdiators) connected bidirectionally.
 
-3. Find the maximum weighted clique C of G in **exponential time**.
+3. Find the maximum weighted clique `C` of `G` in **exponential time**.
 
 4. Byzantine fault tolerance threshold `t = ceil(W(C) - W(V)/2) - 1`. (`q > n/2 + t`)
 
@@ -144,7 +144,7 @@ See: https://en.wikipedia.org/wiki/Clique_problem#Finding_maximum_cliques_in_arb
 | Time complexity | exponential| exponential |
 | Space complexity | -  | - |
 
-Finding a clique requires O*(2^V) time. Even [the fastest algorithm](https://www.labri.fr/perso/robson/mis/techrep.html) requires O*(1.1888^V). ( O*(f(k)) = O(f(k) poly(x)) )
+Finding a clique requires `O*(2^V)` time. Even [the fastest algorithm](https://www.labri.fr/perso/robson/mis/techrep.html) requires `O*(1.1888^V)`. ( `O*(f(k)) = O(f(k) poly(x))` )
 
 #### Why q > n/2 + t?
 
@@ -175,17 +175,17 @@ When satisfying the formula `q > n/2 + t/2`, `t < 2q - n = 14 - 8 = 6`.
 This theorem gives a lower bound on the size of a clique in graphs.
 If a graph has many edges, it contains a large clique.
 
-Let G be any graph with n vertices, such that G is K_{r+1}-free graph that does not contain (r+1)-vertex clique.
+Let `G` be any graph with `n` vertices, such that `G` is K_{r+1}-free graph that does not contain (r+1)-vertex clique.
 
 The upper bound of the number of edge is 
 
 ![](https://i.gyazo.com/0dca1e7495205a9ddd8277a5bd13e6fa.png).
 
-Let E be the set of edges in G.
+Let `E` be the set of edges in `G`.
 
 ![](https://i.gyazo.com/db867537543776cfc9a2ad872d5d7322.png)
 
-r is a lower bound on the size of clique in graphs with n vertices and |E| edges.
+`r` is a lower bound on the size of clique in graphs with `n` vertices and `|E|` edges.
 
 #### Algorithm
 
@@ -193,9 +193,9 @@ r is a lower bound on the size of clique in graphs with n vertices and |E| edges
 
 2. Convert the lobbying graph to an undirected graph by connecting edges (valdiators) connected bidirectionally.
 
-3. Calculate the minimum size of the maximum weighted clique using the above formula in O(1) time.
+3. Calculate the minimum size of the maximum weighted clique using the above formula in `O(1)` time.
 
-4. Calculate the maximum weighted clique C.
+4. Calculate the maximum weighted clique `C`.
 
 5. `t = ceil(W(C) - W(V)/2) - 1`. (`q > n/2 + t`)
 
@@ -223,10 +223,10 @@ Simple Inspector is a generalization of 2-round Clique Oracle.
 1. Construct the lobbying graph G or get it.
 2. Let `q > n/2 + t`.
 3. Compute outdegree of vertices in G.
-4. C = V.
-4. Look for the vertice with outdegree of q or less in C, remove it from C, and update the outdegree counters.
-5. Repeat 4.
-6. If `W(C) >= q`, the property is finalized.
+4. `C = V`
+5. Look for the vertice with outdegree of `q` or less in `C`, remove it from `C`, and update the outdegree counters.
+6. Repeat 5.
+7. If `W(C) >= q`, the property is considered finalized.
 
 #### Metrics
 
@@ -241,8 +241,8 @@ Simple Inspector is a generalization of 2-round Clique Oracle.
 
 See: https://hackingresear.ch/cbc-inspector/
 
-For some q (<= V), computing levels happen worst V times, and the computation runs in O(J) time.
-Therefore the total time complexity is O(V * V * J) = O(V^2J).
+For some `q (<= V)`, computing the levels takes `V` times at worst, and the computation runs in `O(J)` time.
+Therefore the total time complexity is `O(V * V * J) = O(V^2J)`.
 
 ![](https://i.gyazo.com/76474dcf86e942204f51fdfb83206d22.png)
 
@@ -329,7 +329,7 @@ This oracle is a simple simulation-based algorithm.
 
 ### Adversary Oracle with Priority Queue (WIP)
 
-We think that Adversary Oracle is faster using a priority queue.
+We improve the above algorithm using a priority queue.
 
 <!-- 
 #### Using a priority queue
@@ -407,7 +407,7 @@ t|-1|-1|1|1|1
 
 In this case, Clique Oracle and Turán Oracle has not yet detected finality.
 
-{A,B,C,D,E} is the quorum set and `q = 4`, so fault tolerance threshold of Simple Inspector and Inspector `t = ceil(q - n/2) - 1 = ceil(4 - 5/2) - 1 = 1`.
+`{A,B,C,D,E}` is the quorum set and `q = 4`, so fault tolerance threshold of Simple Inspector and Inspector `t = ceil(q - n/2) - 1 = ceil(4 - 5/2) - 1 = 1`.
 
 The `t` of Adversary Oracle is also `ceil((4-1)/2) - 1 = 1`.
 
