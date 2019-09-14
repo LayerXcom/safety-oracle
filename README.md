@@ -75,13 +75,13 @@ The goal of this project is [here](https://github.com/LayerXcom/safety-oracle/is
 
 `M`: The number of messages(vertices) in the MessageDAG.
 
-`J`: The number of arrows in the MessageDAG.
+`J`: The number of edges in the MessageDAG.
 
 In practice, we can assume that `V <= M <= J <= MV`.
 
 ### Lobbying Graph
 
-We construct a *lobbying graph* `G(V,E)` as follows.
+We construct a *lobbying graph* `G(V, E)` as follows.
 
 1. Let `V` be a set of validators that estimates `CAN_ESTIMATE` in their latest message and `G` be a directed graph with a set of vertices `V`.
 
@@ -109,27 +109,29 @@ The lobbying graph constructed from the above MessageDAG is:
 |Time | O(V^2 + VM) | O(V) |
 |Space | O(V^2) | - |
 
-In 2, checking if the justification of the message includes a validator requires `O(1)` time on average case using a hash table. For each validator, getting the latest messages of the other validators and checking if the latest message conflicts with `CAN_ESTIMATE` requires `O(M)`.
-Therefore, the total running time is `O(VM)`.
+In 2, it requires `O(1)` time on average to check if the justification of a message includes another validator using a hash table. 
+For each validator, it requires `O(M)` to get the latest messages of the other validators (to check if the latest message conflicts with `CAN_ESTIMATE`).
+Therefore, the overall complexity is `O(VM)`.
 
-However, if you update the lobbying graph every time you get a message, this process can be improved. Updating the graph when a message comes requires O(V) time because for a message the number of newly connected arrows in the MessageDAG is at most `V`.
+However, if you keep the lobbying graph and update every time you receive a message, this process can be improved.
+It only requires `O(V)` to update the graph in receiving a message because the number of newly connected edges in the MessageDAG is at most `V` for a message.
 
 The space complexity is `O(V^2)` because `E` is `O(V^2)` for any graph. Of course, the space complexity of the MessageDAG is `O(J)`. However, a validator must always have it, so we don't consider it's space in safety oracles.
 
 
 ## Clique Oracle
 
-Clique oracle is a family of algorithms to find a *clique* of vaidators.
+Clique oracle is a family of algorithms to find a *clique* of validators.
 
 ### 2-round Clique Oracle
 
-This is the most naive clique oracle which try to find a maximal weight clique.
+This is the most naive clique oracle which tries to find a maximal weight clique.
 
 #### Algorithm
 
 1. Construct the lobbying graph or get it.
 
-2. Convert the lobbying graph to an undirected graph by connecting edges (valdiators) connected bidirectionally.
+2. Convert the lobbying graph to an undirected graph by connecting edges (validators) connected bidirectionally.
 
 3. Find the maximum weighted clique `C` of `G` in **exponential time**.
 
@@ -177,7 +179,7 @@ If a graph has many edges, it contains a large clique.
 
 Let `G` be any graph with `n` vertices, such that `G` is K_{r+1}-free graph that does not contain (r+1)-vertex clique.
 
-The upper bound of the number of edge is 
+The upper bound of the number of edges is 
 
 ![](https://i.gyazo.com/0dca1e7495205a9ddd8277a5bd13e6fa.png).
 
@@ -185,13 +187,13 @@ Let `E` be the set of edges in `G`.
 
 ![](https://i.gyazo.com/db867537543776cfc9a2ad872d5d7322.png)
 
-`r` is a lower bound on the size of clique in graphs with `n` vertices and `|E|` edges.
+`r` is a lower bound on the size of a clique in graphs with `n` vertices and `|E|` edges.
 
 #### Algorithm
 
 1. Construct the lobbying graph or get it.
 
-2. Convert the lobbying graph to an undirected graph by connecting edges (valdiators) connected bidirectionally.
+2. Convert the lobbying graph to an undirected graph by connecting edges (validators) connected bidirectionally.
 
 3. Calculate the minimum size of the maximum weighted clique using the above formula in `O(1)` time.
 
@@ -374,8 +376,8 @@ This image is the relationship between Byzantine (or equivocation) fault toleran
 
 The line `q = n - t` represents the maximum number of honest validators.
 
-Safety oracles that satisfies `q > n/2 + t` can achieve that Byzantine fault tolerance threshold is `1/4`.
-On the other hand, safety oracles that satisfies `q > n/2 + t/2` can achieve that it is `1/3`.
+Safety oracles that satisfy `q > n/2 + t` can achieve that Byzantine fault tolerance threshold is `1/4`.
+On the other hand, safety oracles that satisfy `q > n/2 + t/2` can achieve that it is `1/3`.
 
 #### Example 1
 
@@ -405,7 +407,7 @@ In this sample, Inspector fault tolerance threshold is:
 -|-|-|-|-|-
 t|-1|-1|1|1|1
 
-In this case, Clique Oracle and Turán Oracle has not yet detected finality.
+In this case, Clique Oracle and Turán Oracle have not yet detected finality.
 
 `{A,B,C,D,E}` is the quorum set and `q = 4`, so fault tolerance threshold of Simple Inspector and Inspector `t = ceil(q - n/2) - 1 = ceil(4 - 5/2) - 1 = 1`.
 
