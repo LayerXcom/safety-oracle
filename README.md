@@ -420,5 +420,7 @@ The `t` of the adversary oracle is also `ceil((4-1)/2) - 1 = 1`.
 
 ||Clique Oracle | Turán Oracle | Simple Inspector | Inspector |  Adversary Oracle |
 -|-|-|-|-|-
-t|2|2|2|2|2
+t|2|N/A|2|2|2
+
+In Turán oracle, `n^2/(n^2-2|E|) = 8^2 / (8^2 - 7*6) = 64/22 = 2.9... < n/2`. 
 
