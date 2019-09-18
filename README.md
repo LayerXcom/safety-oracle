@@ -245,10 +245,18 @@ The Simple Inspector is a generalization of 2-round clique oracle.
 
 See: https://hackingresear.ch/cbc-inspector/
 
-For some `q (<= V)`, computing the levels takes `V` times at worst, and the computation runs in `O(J)` time.
+![](https://i.gyazo.com/76474dcf86e942204f51fdfb83206d22.png)
+
+For some `q (<= V)`, the algorithm needs to find the maximum `t`.
+
+![](https://i.gyazo.com/d0d01e49a5c223de6b5caa0b7342feec.png)
+
+This image is the contour plot about `t` where `n = 100`.
+
+Computing the levels takes `V` times at worst, and the computation runs in `O(J)` time.
+
 Therefore the total time complexity is `O(V * V * J) = O(V^2J)`.
 
-![](https://i.gyazo.com/76474dcf86e942204f51fdfb83206d22.png)
 
 #### Metrics
 
@@ -427,12 +435,12 @@ In the Turán oracle, `n^2/(n^2-2|E|) = 8^2 / (8^2 - 7*6) = 64/22 = 2.9... < n/2
 ## Conclusion
 
 - The Simple Inspector is better than the 2-round clique oracle and the original adversary oracle.
-- The adversary oracle is equivalent to the Simple Inspector as for detecting finality.
-- The Inspector is just a little heavy algorithm, but can achieve it's fault tolerance threshold of up to n/3.
+- The adversary oracle is equivalent to the Simple Inspector for detecting finality.
+- The Inspector is just a little slow algorithm but can achieve its fault tolerance threshold of up to n/3.
 
 <!--
 ### The Simple Inspector is better than the 2-round clique oracle
-In the above example 4, the clique oracle have not yet detected finality, but the Simple Inspector's fault tolerance threshold is 1. 
+In the above example 4, the clique oracle has not yet detected finality, but the Simple Inspector's fault tolerance threshold is 1. 
 
 ### The Simple Inspector is better than the original adversary oracle
 The original adversary oracle's fault tolerance threshold is the minimum validator weight of validators, but the Simple Inspector's fault tolerance threshold 
