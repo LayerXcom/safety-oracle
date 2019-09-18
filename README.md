@@ -422,5 +422,18 @@ The `t` of the adversary oracle is also `ceil((4-1)/2) - 1 = 1`.
 -|-|-|-|-|-
 t|2|N/A|2|2|2
 
-In Turán oracle, `n^2/(n^2-2|E|) = 8^2 / (8^2 - 7*6) = 64/22 = 2.9... < n/2`. 
+In the Turán oracle, `n^2/(n^2-2|E|) = 8^2 / (8^2 - 7*6) = 64/22 = 2.9... < n/2`. 
 
+## Conclusion
+
+- The Simple Inspector is better than the 2-round clique oracle and the original adversary oracle.
+- The adversary oracle is equivalent to the Simple Inspector as for detecting finality.
+- The Inspector is just a little heavy algorithm, but can achieve it's fault tolerance threshold of up to n/3.
+
+<!--
+### The Simple Inspector is better than the 2-round clique oracle
+In the above example 4, the clique oracle have not yet detected finality, but the Simple Inspector's fault tolerance threshold is 1. 
+
+### The Simple Inspector is better than the original adversary oracle
+The original adversary oracle's fault tolerance threshold is the minimum validator weight of validators, but the Simple Inspector's fault tolerance threshold 
+  -->
