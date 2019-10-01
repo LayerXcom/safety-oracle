@@ -24,7 +24,6 @@ The goal of this project is [here](https://github.com/LayerXcom/safety-oracle/is
       * [Turán theorem](README.md#turán-theorem)
       * [Algorithm](README.md#algorithm-1)
       * [Metrics](README.md#metrics-1)
-   * [3-round Clique oracle](README.md#3-round-clique-oracle)
 * [Finality Inspector](README.md#finality-inspector)
    * [Simple Inspector](README.md#simple-inspector)
       * [Algorithm](README.md#algorithm-2)
@@ -209,11 +208,6 @@ Let `E` be the set of edges in `G`.
 -|-|-
 | Time complexity | O(V^2 + VM)| O(1) |
 | Space complexity | O(V^2) | - |
-
-
-### 3-round Clique Oracle
-
-WIP [Issue](https://github.com/LayerXcom/safety-oracle/issues/3)
 
 
 ## Finality Inspector
